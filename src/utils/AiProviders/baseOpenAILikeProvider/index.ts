@@ -42,6 +42,12 @@ export type ICompleteResponse = {
     total_tokens: number;
     outputTps: number;
     duration: number;
+    /** Summed over every LLM round of a turn with tool calls (the fields above are the last round) */
+    total_prompt_tokens?: number;
+    total_completion_tokens?: number;
+    /** Prompt tokens served from the provider's cache, when it reports them (billed cheaper) */
+    cached_prompt_tokens?: number;
+    total_cached_prompt_tokens?: number;
   },
 }
 
@@ -751,6 +757,9 @@ export default abstract class BaseOpenAILikeProvider {
       let reasoningText = "";
 
       /** Closes an open <think> block - once content starts, or at the very end if no content ever came. */
+      /** Prompt tokens the provider served from its cache, from `usage.prompt_tokens_details` */
+      let cachedPromptTokens = 0;
+
       const closeReasoning = () => {
         if (!reasoningText) return;
         handler('chunk', '</think>');
@@ -771,7 +780,8 @@ export default abstract class BaseOpenAILikeProvider {
         }
         // Only override the locally counted prompt tokens when the provider reported a real value.
         const reported = usage.prompt_tokens > 0 ? usage : { completion_tokens: usage.completion_tokens };
-        return { ...stream.endMeasurement(reported, finishedAt) };
+        const measured = stream.endMeasurement(reported, finishedAt);
+        return cachedPromptTokens ? { ...measured, cached_prompt_tokens: cachedPromptTokens } : { ...measured };
       };
 
       const buildResult = (): ICompleteResponse => ({
@@ -819,6 +829,8 @@ export default abstract class BaseOpenAILikeProvider {
 
           // Handle usage metrics if present
           if (chunk?.usage) {
+            const cached = Number(chunk.usage.prompt_tokens_details?.cached_tokens ?? 0);
+            if (cached > 0) cachedPromptTokens = cached;
             if (chunk.usage.prompt_tokens) {
               usage.prompt_tokens = Number(chunk.usage.prompt_tokens);
             }

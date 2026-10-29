@@ -152,6 +152,7 @@ class ToolsManager {
         Tools.default.getCurrentTime,
         Tools.default.summarize,
         Tools.default.createScheduledJob,
+        Tools.default.generateImage,
         Tools.createFiles.createTextFile,
         Tools.createFiles.createPdfFile,
         Tools.createFiles.createDocxFile,
@@ -422,6 +423,28 @@ class ToolsManager {
         let willLoop = currentResponse.toolCalls && currentResponse.toolCalls.length > 0;
         if (!willLoop) return currentResponse;
 
+        // Every round is billed, so usage tracking needs the sum - metrics only describe the last round
+        const totals = {
+            prompt: currentResponse.metrics?.prompt_tokens ?? 0,
+            completion: currentResponse.metrics?.completion_tokens ?? 0,
+            cached: currentResponse.metrics?.cached_prompt_tokens ?? 0,
+        };
+        const withTotals = (response: ICompleteResponse): ICompleteResponse => {
+            totals.prompt += response.metrics?.prompt_tokens ?? 0;
+            totals.completion += response.metrics?.completion_tokens ?? 0;
+            totals.cached += response.metrics?.cached_prompt_tokens ?? 0;
+            if (!response.metrics) return response;
+            return {
+                ...response,
+                metrics: {
+                    ...response.metrics,
+                    total_prompt_tokens: totals.prompt,
+                    total_completion_tokens: totals.completion,
+                    total_cached_prompt_tokens: totals.cached,
+                },
+            };
+        };
+
         let availableTools = toolset ? toolset.map(tool => tool.definition) : await this.injectAvailableTools();
         let nextResponse = currentResponse;
         let nextMessages = [...currentMessageHistory];
@@ -455,10 +478,11 @@ class ToolsManager {
             if (maxToolCalls && toolCallsUsed >= maxToolCalls) {
                 this.log(`ToolsManager::toolCallLoop: Tool call limit (${maxToolCalls}) reached - running a final round with no tools`);
                 streamEmitter('report_status', i18n.t('models.status.tool_call_limit_reached', { count: maxToolCalls }));
-                return runStreamCompletion(this.toolFreeHistory(nextMessages, TOOL_LIMIT_NOTE), (token: string) => streamEmitter('chunk', token), []);
+                return withTotals(await runStreamCompletion(this.toolFreeHistory(nextMessages, TOOL_LIMIT_NOTE), (token: string) => streamEmitter('chunk', token), []));
             }
 
             nextResponse = await runStreamCompletion(nextMessages, (token: string) => streamEmitter('chunk', token), availableTools);
+            nextResponse = withTotals(nextResponse);
             willLoop = nextResponse.toolCalls && nextResponse.toolCalls.length > 0;
         } while (willLoop);
         return nextResponse;

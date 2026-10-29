@@ -141,3 +141,33 @@ describe('toolCallLoop max tool calls', () => {
     expect(search.execute).toHaveBeenCalledTimes(15);
   });
 });
+
+describe('toolCallLoop usage totals', () => {
+  const metrics = (prompt: number, completion: number, cached = 0) => ({ prompt_tokens: prompt, completion_tokens: completion, total_tokens: prompt + completion, outputTps: 0, duration: 0, cached_prompt_tokens: cached });
+
+  test('sums the tokens of every round, since each round is billed', async () => {
+    const search = makeTool('search');
+    let round = 0;
+    const runStreamCompletion = jest.fn(async () => {
+      round += 1;
+      return round === 1
+        ? { ...toolCallResponse(['search']), metrics: metrics(1200, 40, 1000) }
+        : { textResponse: 'done', toolCalls: [], metrics: metrics(1500, 300, 1100) } as any;
+    });
+
+    const result = await ToolsManager.toolCallLoop({
+      currentResponse: { ...toolCallResponse(['search']), metrics: metrics(1000, 30) },
+      runStreamCompletion,
+      streamEmitter: () => null,
+      currentMessageHistory: [{ role: 'user', content: 'hi' }],
+      mergeToolCallResults: false,
+      toolset: [search],
+    });
+
+    // The last round's own numbers stay as they were
+    expect(result.metrics.prompt_tokens).toBe(1500);
+    expect(result.metrics.total_prompt_tokens).toBe(1000 + 1200 + 1500);
+    expect(result.metrics.total_completion_tokens).toBe(30 + 40 + 300);
+    expect(result.metrics.total_cached_prompt_tokens).toBe(1000 + 1100);
+  });
+});

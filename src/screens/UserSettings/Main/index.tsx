@@ -8,6 +8,7 @@ import {
   DiscordLogo,
   FileText,
   FileLock,
+  ImageSquare,
   ChartBar,
   GithubLogo,
   Scroll,
@@ -322,6 +323,11 @@ export function MainView({ goToPage }: MainViewProps) {
                 icon={<Translate size={18} color="#FFF" />}
                 value={activeLanguage?.nativeName}
                 onPress={() => goToPage('language')}
+              />
+              <SupportItem
+                title={t('settings.utility.image_generation')}
+                icon={<ImageSquare size={18} color="#FFF" />}
+                onPress={() => goToPage('image_generation')}
               />
               <SupportItem
                 title={t('settings.utility.tool_auto_approvals')}

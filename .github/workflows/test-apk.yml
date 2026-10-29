@@ -1,0 +1,52 @@
+name: Build test APK
+
+# Builds an installable APK for testing a branch on a phone. It is a release build (JS bundled,
+# no Metro needed) signed with the repo's debug keystore, so no signing secrets are required.
+# Not for distribution: it cannot update a Play Store install (different signature).
+
+# Manual only (Actions > Build test APK > Run workflow) - builds take ~20 minutes, so they run
+# when asked for instead of on every push.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: test-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --network-timeout 600000
+
+      - name: Sign the release build with the debug keystore
+        run: |
+          sed -i 's/signingConfig signingConfigs.release/signingConfig signingConfigs.debug/' android/app/build.gradle
+          grep -n "signingConfig signingConfigs" android/app/build.gradle
+
+      - name: Build APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          retention-days: 14

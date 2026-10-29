@@ -126,8 +126,25 @@
       "title": "ユーティリティ",
       "anonymous_telemetry": "匿名テレメトリ",
       "tool_auto_approvals": "ツールの自動承認",
+      "image_generation": null,
       "clear_temp_files": "一時ファイルをクリア",
       "temp_files_cleared": "一時ファイルがクリアされました"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "これらのツールは承認を求めずに実行されます。スワイプするかゴミ箱ボタンをタップすると、次回から再び確認されます。",
@@ -258,6 +275,11 @@
       "worked_for": "{{duration}}作業しました",
       "thought_for": "{{duration}}考えました",
       "thoughts": "考え"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}}を{{location}}に保存しました",
@@ -618,6 +640,13 @@
       "description": "テーマおよびオプションのタイトルページを含むMarkdownからスタイル付き.docxを作成します。",
       "status_creating": "Wordドキュメント「{{name}}」を作成"
     },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
+    },
     "create_pdf_file": {
       "name": "PDFドキュメント",
       "description": "MarkdownまたはプレーンテキストをフォーマットされたPDFに変換します。",
@@ -738,7 +767,10 @@
       "connect": "接続",
       "connecting": "接続中...",
       "connect_failed": "{{provider}} からモデルの読み込みに失敗しました。 上記の詳細をご確認いただくか、モデル名を指定して使用してください。",
-      "model": "モデル"
+      "model": "モデル",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "開発者ツールを開くには、{{count}}回さらに押してください",
     "thread_menu": {
@@ -750,7 +782,21 @@
       "memories": "思い出",
       "memories_description": "あなたまたはあなたの設定についての思い出を参照してください",
       "export_thread": "チャットスレッドをエクスポート",
-      "saved_to_device": "デバイスに保存"
+      "saved_to_device": "デバイスに保存",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
@@ -1397,5 +1443,71 @@
   },
   "deep_links": {
     "finish_onboarding": "リンクを開く前にAnythingLLMのセットアップを完了"
+  },
+  "opper_models": {
+    "maker_via_host": null,
+    "no_training": null,
+    "badges": {
+      "best": null,
+      "edit": null,
+      "fast": null,
+      "very_fast": null,
+      "no_logging": null,
+      "zdr": null,
+      "pdf": null,
+      "reasoning": null,
+      "trains": null,
+      "vision": null
+    },
+    "filters": {
+      "title": null,
+      "button": null,
+      "button_count_other": null,
+      "clear": null,
+      "privacy": null,
+      "no_logging_hint": null,
+      "zdr": null,
+      "zdr_hint": null,
+      "dpa": null,
+      "dpa_hint": null,
+      "can": null,
+      "structured": null,
+      "speed_quality": null,
+      "best_quality": null,
+      "max_price": null,
+      "per_image": null,
+      "per_million": null,
+      "any_price": null,
+      "show_count_other": null,
+      "none_match": null
+    },
+    "info": {
+      "open": null,
+      "maker": null,
+      "route": null,
+      "runs_in": null,
+      "training": null,
+      "yes": null,
+      "no": null,
+      "logging": null,
+      "none": null,
+      "abuse_monitoring": null,
+      "storage": null,
+      "not_stored": null,
+      "stored": null,
+      "stored_days_other": null,
+      "unknown": null,
+      "moderation": null,
+      "transfer": null,
+      "stays_in_eu": null,
+      "sccs": null,
+      "dpa": null,
+      "available": null,
+      "not_available": null,
+      "context": null,
+      "context_tokens": null,
+      "max_size": null,
+      "price": null
+    }
   }
 }

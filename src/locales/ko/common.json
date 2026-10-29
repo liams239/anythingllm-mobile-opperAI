@@ -126,8 +126,25 @@
       "title": "유틸리티",
       "anonymous_telemetry": "익명 원격 분석",
       "tool_auto_approvals": "도구 자동 승인",
+      "image_generation": null,
       "clear_temp_files": "임시 파일 지우기",
       "temp_files_cleared": "임시 파일이 지워짐"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "이 도구들은 승인을 요청하지 않고 실행됩니다. 다음에 다시 확인받으려면 항목을 스와이프하거나 휴지통 버튼을 탭하세요.",
@@ -258,6 +275,11 @@
       "worked_for": "{{duration}} 동안 작업함",
       "thought_for": "{{duration}} 동안 생각함",
       "thoughts": "생각"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}}을(를) {{location}}에 저장함",
@@ -618,6 +640,13 @@
       "description": "마크다운에서 테마와 선택적 제목 페이지가 있는 스타일 지정된 .docx를 작성합니다.",
       "status_creating": "Word 문서 \"{{name}}\" 만드는 중"
     },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
+    },
     "create_pdf_file": {
       "name": "PDF 문서",
       "description": "마크다운 또는 일반 텍스트를 형식이 지정된 PDF로 변환합니다.",
@@ -738,7 +767,10 @@
       "connect": "연결",
       "connecting": "연결 중...",
       "connect_failed": "{{provider}}에서 모델을 로드할 수 없습니다. 상단의 세부 정보를 확인하거나, 모델 이름을 직접 입력하여 사용하십시오.",
-      "model": "모델"
+      "model": "모델",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "개발자 도구를 열기 위해 {{count}}회 더 누르세요",
     "thread_menu": {
@@ -750,7 +782,21 @@
       "memories": "메모리",
       "memories_description": "당신이나 당신의 선호도에 대한 메모리 확인",
       "export_thread": "채팅 스레드 내보내기",
-      "saved_to_device": "기기에 저장됨"
+      "saved_to_device": "기기에 저장됨",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
@@ -1397,5 +1443,71 @@
   },
   "deep_links": {
     "finish_onboarding": "링크를 열기 전에 AnythingLLM 설정을 완료하세요"
+  },
+  "opper_models": {
+    "maker_via_host": null,
+    "no_training": null,
+    "badges": {
+      "best": null,
+      "edit": null,
+      "fast": null,
+      "very_fast": null,
+      "no_logging": null,
+      "zdr": null,
+      "pdf": null,
+      "reasoning": null,
+      "trains": null,
+      "vision": null
+    },
+    "filters": {
+      "title": null,
+      "button": null,
+      "button_count_other": null,
+      "clear": null,
+      "privacy": null,
+      "no_logging_hint": null,
+      "zdr": null,
+      "zdr_hint": null,
+      "dpa": null,
+      "dpa_hint": null,
+      "can": null,
+      "structured": null,
+      "speed_quality": null,
+      "best_quality": null,
+      "max_price": null,
+      "per_image": null,
+      "per_million": null,
+      "any_price": null,
+      "show_count_other": null,
+      "none_match": null
+    },
+    "info": {
+      "open": null,
+      "maker": null,
+      "route": null,
+      "runs_in": null,
+      "training": null,
+      "yes": null,
+      "no": null,
+      "logging": null,
+      "none": null,
+      "abuse_monitoring": null,
+      "storage": null,
+      "not_stored": null,
+      "stored": null,
+      "stored_days_other": null,
+      "unknown": null,
+      "moderation": null,
+      "transfer": null,
+      "stays_in_eu": null,
+      "sccs": null,
+      "dpa": null,
+      "available": null,
+      "not_available": null,
+      "context": null,
+      "context_tokens": null,
+      "max_size": null,
+      "price": null
+    }
   }
 }

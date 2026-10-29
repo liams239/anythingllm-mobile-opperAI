@@ -57,10 +57,23 @@ import { useTranslation } from 'react-i18next';
 import useProviderSwitcher from '@/hooks/useProviderSwitcher';
 import ProviderPicker, { ProviderBar } from './ProviderPicker';
 import ProviderConnectForm from './ProviderConnectForm';
+import ImageModelPicker, { ImageModelBar, IMAGE_MODEL_BAR_HEIGHT } from './ImageModelPicker';
+import {
+  getOpperSettings, isOpperUrl, listOpperChatModels, listOpperImageModels, matchesFilters, noModelTrains,
+  type OpperModel, type OpperSettings,
+} from '@/utils/opper';
+import OpperModelRow from '@/components/OpperModels/ModelRow';
+import OpperModelInfo from '@/components/OpperModels/ModelInfo';
+import { FilterPanel, NoTrainingNote, QuickFilters } from '@/components/OpperModels/Filters';
+import useOpperFilters from '@/components/OpperModels/useOpperFilters';
+import { navigateWhenReady } from '@/utils/navigationRef';
+import { PATHS } from '@/utils/paths';
 
 // Provider bar height (see `ProviderBar`) and the gap below it - keeps status messages centered under it.
 const HEADER_HEIGHT = 44;
 const HEADER_GAP = 16;
+// Gap between the provider bar and the image model row below it
+const IMAGE_MODEL_BAR_GAP = 8;
 // Short model lists fit on screen - only offer search once there is something to sift through.
 const MIN_MODELS_FOR_SEARCH = 5;
 
@@ -202,7 +215,7 @@ function closeModelSheet(bottomSheetRef: React.RefObject<BottomSheetModal | null
   bottomSheetRef.current?.dismiss();
 }
 
-type SheetView ={ name: 'models' } | { name: 'providers' } | { name: 'connect'; provider: string };
+type SheetView = { name: 'models' } | { name: 'providers' } | { name: 'connect'; provider: string } | { name: 'imageModels' };
 
 /**
  * Everything inside the chip's sheet: the model list for the active provider, plus an in-sheet
@@ -214,6 +227,30 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
   const { configuredProviders, switchProvider } = useProviderSwitcher();
   const [view, setView] = useState<SheetView>({ name: 'models' });
   const [isSwitching, setIsSwitching] = useState(false);
+  // Opper settings for the image model row - undefined while loading
+  const [imageSettings, setImageSettings] = useState<OpperSettings | null | undefined>(undefined);
+
+  useEffect(() => {
+    getOpperSettings().then(setImageSettings).catch(() => setImageSettings(null));
+  }, []);
+
+  // The picked image model's listing entry, for the icons on its row (cached, so usually instant)
+  const [imageModel, setImageModel] = useState<OpperModel | null>(null);
+  useEffect(() => {
+    if (!imageSettings?.model) return setImageModel(null);
+    let cancelled = false;
+    listOpperImageModels(imageSettings.apiKey)
+      .then(models => { if (!cancelled) setImageModel(models.find(m => m.id === imageSettings.model) ?? null); })
+      .catch(() => null);
+    return () => { cancelled = true; };
+  }, [imageSettings?.apiKey, imageSettings?.model]);
+
+  const openImageModels = () => {
+    if (imageSettings) return setView({ name: 'imageModels' });
+    // No key yet - image generation is set up on its settings page
+    closeModelSheet(bottomSheetRef);
+    navigateWhenReady(PATHS.user_settings, { page: 'image_generation' });
+  };
 
   // Ready-to-use providers switch in one tap; anything else needs its connection details first.
   const pickProvider = async (provider: string) => {
@@ -241,6 +278,20 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
     );
   }
 
+  if (view.name === 'imageModels' && imageSettings) {
+    return (
+      <ImageModelPicker
+        settings={imageSettings}
+        onBack={() => setView({ name: 'models' })}
+        onSearchFocus={() => bottomSheetRef.current?.snapToIndex(1)}
+        onSaved={(next) => {
+          setImageSettings(next);
+          closeModelSheet(bottomSheetRef);
+        }}
+      />
+    );
+  }
+
   if (view.name === 'connect') {
     return (
       <ProviderConnectForm
@@ -257,12 +308,20 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
     );
   }
 
-  const header = <ProviderBar provider={llmPreferences.provider} onPress={() => setView({ name: 'providers' })} />;
+  const showImageModel = imageSettings !== undefined;
+  const header = (
+    <View style={{ gap: IMAGE_MODEL_BAR_GAP, alignSelf: 'stretch' }}>
+      <ProviderBar provider={llmPreferences.provider} onPress={() => setView({ name: 'providers' })} />
+      {showImageModel && <ImageModelBar settings={imageSettings} model={imageModel} onPress={openImageModels} />}
+    </View>
+  );
+  const headerHeight = HEADER_HEIGHT + (showImageModel ? IMAGE_MODEL_BAR_GAP + IMAGE_MODEL_BAR_HEIGHT : 0);
   return LLMProvider?.isExternalProvider
     ? (
       <ExternalProviderModels
         bottomSheetRef={bottomSheetRef}
         header={header}
+        headerHeight={headerHeight}
         onEditConnection={() => setView({ name: 'connect', provider: llmPreferences.provider })}
       />
     )
@@ -491,10 +550,13 @@ function AvailableModels({
 function ExternalProviderModels({
   bottomSheetRef,
   header,
+  headerHeight = HEADER_HEIGHT,
   onEditConnection,
 }: {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   header: React.ReactNode;
+  /** Height of `header`, so status messages center in the space below it */
+  headerHeight?: number;
   onEditConnection: () => void;
 }) {
   const { t } = useTranslation();
@@ -536,14 +598,43 @@ function ExternalProviderModels({
     fetchModels();
   }, [fetchModels]);
 
+  // Opper's OpenAI-compatible /models has only ids - prices, badges and privacy come from Opper's
+  // own listing, matched per route id
+  const isOpper = isOpperUrl(baseUrl);
+  const [opperModels, setOpperModels] = useState<Map<string, OpperModel> | null>(null);
+  const [opperFilters, setOpperFilters] = useOpperFilters('chat');
+  const [opperView, setOpperView] = useState<{ name: 'list' } | { name: 'filters' } | { name: 'info'; model: OpperModel }>({ name: 'list' });
+  useEffect(() => {
+    if (!isOpper) return setOpperModels(null);
+    let cancelled = false;
+    listOpperChatModels(apiKey)
+      .then(byId => { if (!cancelled) setOpperModels(byId); })
+      .catch(error => console.log('[ModelChip] Could not load Opper model details', error));
+    return () => { cancelled = true; };
+  }, [isOpper, apiKey]);
+
+  // Filters only apply once Opper's details are in - before that every model shows
+  const opperFiltered = useMemo(() => {
+    if (!opperModels) return models;
+    return models.filter(model => {
+      const entry = opperModels.get(model.id);
+      return matchesFilters(entry?.meta, entry?.price, opperFilters);
+    });
+  }, [models, opperModels, opperFilters]);
+  const noneTrain = useMemo(
+    () => !!opperModels && noModelTrains(models.map(model => opperModels.get(model.id)?.meta)),
+    [models, opperModels],
+  );
+
   const filteredModels = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return models;
-    return models.filter(model =>
+    if (!query) return opperFiltered;
+    return opperFiltered.filter(model =>
       model.id.toLowerCase().includes(query) ||
-      ((model as { name?: string }).name || '').toLowerCase().includes(query),
+      ((model as { name?: string }).name || '').toLowerCase().includes(query) ||
+      (opperModels?.get(model.id)?.name || '').toLowerCase().includes(query),
     );
-  }, [models, searchQuery]);
+  }, [opperFiltered, searchQuery, opperModels]);
 
   const selectModel = async (modelId: string) => {
     if (isSaving) return;
@@ -564,7 +655,7 @@ function ExternalProviderModels({
     return (
       <View className="w-full" style={{ gap: HEADER_GAP }}>
         {header}
-        <VisibleSheetCenter inset={HEADER_HEIGHT + HEADER_GAP} style={{ gap: 12 }}>
+        <VisibleSheetCenter inset={headerHeight + HEADER_GAP} style={{ gap: 12 }}>
           <ActivityIndicator size="large" color="white" />
           <Text className="text-[#9F9FA0] text-sm">{t('top_bar.model_chip.loading_models', { provider: providerName })}</Text>
         </VisibleSheetCenter>
@@ -576,7 +667,7 @@ function ExternalProviderModels({
     return (
       <View className="w-full" style={{ gap: HEADER_GAP }}>
         {header}
-        <VisibleSheetCenter inset={HEADER_HEIGHT + HEADER_GAP} style={{ gap: 12, paddingHorizontal: 32 }}>
+        <VisibleSheetCenter inset={headerHeight + HEADER_GAP} style={{ gap: 12, paddingHorizontal: 32 }}>
           <WarningCircle size={40} color="#f87171" weight="bold" />
           <Text className="text-white text-base font-semibold text-center">
             {t('top_bar.model_chip.list_failed_title', { provider: providerName })}
@@ -597,6 +688,13 @@ function ExternalProviderModels({
         </VisibleSheetCenter>
       </View>
     );
+  }
+
+  if (opperModels && opperView.name === 'filters') {
+    return <FilterPanel kind="chat" filters={opperFilters} onChange={setOpperFilters} matchCount={opperFiltered.length} onDone={() => setOpperView({ name: 'list' })} />;
+  }
+  if (opperView.name === 'info') {
+    return <OpperModelInfo model={opperView.model} kind="chat" onBack={() => setOpperView({ name: 'list' })} />;
   }
 
   return (
@@ -621,9 +719,15 @@ function ExternalProviderModels({
           )}
         </View>
       )}
+      {!!opperModels && (
+        <View className="w-full" style={{ gap: 10 }}>
+          <QuickFilters kind="chat" filters={opperFilters} onChange={setOpperFilters} onOpenPanel={() => setOpperView({ name: 'filters' })} />
+          {noneTrain && <NoTrainingNote />}
+        </View>
+      )}
       {!filteredModels.length && (
         <Text className="text-white text-sm text-center pt-4 px-5">
-          {t('top_bar.model_chip.no_models_found', { query: searchQuery })}
+          {searchQuery ? t('top_bar.model_chip.no_models_found', { query: searchQuery }) : t('opper_models.filters.none_match')}
         </Text>
       )}
       {filteredModels.length > 0 && (
@@ -637,6 +741,21 @@ function ExternalProviderModels({
           renderItem={({ item: model }) => {
             const isSelected = model.id === currentModelId;
             const displayName = (model as { name?: string }).name;
+            if (opperModels) {
+              const entry = opperModels.get(model.id);
+              return (
+                <OpperModelRow
+                  id={model.id}
+                  name={entry?.name || displayName}
+                  model={entry}
+                  kind="chat"
+                  selected={isSelected}
+                  disabled={isSaving}
+                  onPress={() => selectModel(model.id)}
+                  onInfo={entry ? () => setOpperView({ name: 'info', model: entry }) : undefined}
+                />
+              );
+            }
             return (
               <TouchableOpacity
                 disabled={isSaving}

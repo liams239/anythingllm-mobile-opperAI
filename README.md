@@ -30,6 +30,31 @@
 
 ---
 
+### What this fork adds
+
+This is a fork of [Mintplex-Labs/anythingllm-mobile](https://github.com/Mintplex-Labs/anythingllm-mobile). Everything below comes on top of the original app.
+
+**Image generation in any chat, with [Opper](https://opper.ai)**
+- Ask for an image in the middle of a normal conversation. Your chat model (cloud or on-device) hands the request to an image model on Opper and keeps talking, all in the same thread.
+- The image appears under the reply. Tap it for full screen, or save and share it. Images are cleaned up with their chat, like other generated files.
+- Add your Opper API key in **Settings > Image generation**. It is stored in the phone's keychain, and saving it switches the tool on.
+- Pick the image model where you pick your chat model: the model chip at the top now has an image model row.
+
+**Know what you are choosing (Opper models)**
+- Prices next to every model: input, output and cache per 1M tokens for chat models, per image (or a range per quality and size) or per megapixel for image models. A "+" marks prices that rise for long prompts.
+- Badges per route: region (EU, US, Global), privacy (no logging, Zero Data Retention), what the model can do (edit images, see images, read PDFs, reason), speed, quality, and context or image size.
+- Filters: quick ones above the list (eg EU, no logging) and a full panel for region, ZDR, data processing agreement, capabilities, speed and quality, and a maximum price. Your filters are remembered.
+- An info sheet per model with its route, where it runs, logging, storage and retention, moderation, data transfer and DPA.
+- Works for the image model list and for the chat models of an OpenAI-compatible connection pointed at Opper. ZDR is only shown when Opper reports that nothing is stored.
+
+**Usage and cost**
+- **Usage** in the thread menu (the three dots, top right) shows the tokens and estimated cost of this chat and of all chats this month, plus generated images with what Opper billed for them. It stays out of the chat itself.
+- Token counts cover every round of a reply, including tool calls. For a connection to Opper the app now asks the server for real usage (including cached tokens) instead of estimating it.
+- Costs come from Opper's list prices; replies from other providers count for tokens only.
+
+**Test builds**
+- A manual GitHub Actions workflow (**Actions > Build test APK > Run workflow**) builds an installable APK of any branch, signed with the debug key. It cannot update a Play Store install.
+
 ### Product Overview
 
 AnythingLLM Mobile brings the **local-first** ethos of [AnythingLLM](https://github.com/Mintplex-Labs/anything-llm) to your phone. We believe intelligence should be private, instant, and available on every device you own, with all the context you want it to have.

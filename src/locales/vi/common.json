@@ -126,8 +126,25 @@
       "title": "Tiện ích",
       "anonymous_telemetry": "Dữ liệu viễn cảm ẩn danh",
       "tool_auto_approvals": "Tự động phê duyệt công cụ",
+      "image_generation": null,
       "clear_temp_files": "Xóa tệp tạm thời",
       "temp_files_cleared": "Đã xóa tệp tạm thời"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Các công cụ này chạy mà không cần hỏi bạn phê duyệt. Vuốt một công cụ đi hoặc nhấn nút thùng rác để được hỏi lại vào lần sau.",
@@ -258,6 +275,11 @@
       "worked_for": "Làm việc trong {{duration}}",
       "thought_for": "Suy nghĩ trong {{duration}}",
       "thoughts": "Suy nghĩ"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "Đã lưu {{filename}} vào {{location}}",
@@ -618,6 +640,13 @@
       "description": "Viết một .docx được tạo kiểu từ markdown với các chủ đề và một trang tiêu đề tùy chọn.",
       "status_creating": "Đang tạo tài liệu Word \"{{name}}\""
     },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
+    },
     "create_pdf_file": {
       "name": "Tài liệu PDF",
       "description": "Chuyển markdown hoặc văn bản thuần túy thành PDF được định dạng.",
@@ -738,7 +767,10 @@
       "connect": "Kết nối",
       "connecting": "Đang kết nối...",
       "connect_failed": "Không thể tải mô hình từ {{provider}}. Vui lòng kiểm tra thông tin trên, hoặc nhập tên mô hình để sử dụng.",
-      "model": "Mô hình"
+      "model": "Mô hình",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "Nhấn {{count}} lần nữa để mở công cụ nhà phát triển",
     "thread_menu": {
@@ -750,7 +782,21 @@
       "memories": "Ký ức",
       "memories_description": "Xem ký ức về bạn hoặc tùy chọn của bạn",
       "export_thread": "Xuất chủ đề trò chuyện",
-      "saved_to_device": "Đã lưu vào thiết bị của bạn"
+      "saved_to_device": "Đã lưu vào thiết bị của bạn",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
@@ -1397,5 +1443,71 @@
   },
   "deep_links": {
     "finish_onboarding": "Kết thúc cài đặt AnythingLLM trước khi mở các liên kết đến nó"
+  },
+  "opper_models": {
+    "maker_via_host": null,
+    "no_training": null,
+    "badges": {
+      "best": null,
+      "edit": null,
+      "fast": null,
+      "very_fast": null,
+      "no_logging": null,
+      "zdr": null,
+      "pdf": null,
+      "reasoning": null,
+      "trains": null,
+      "vision": null
+    },
+    "filters": {
+      "title": null,
+      "button": null,
+      "button_count_other": null,
+      "clear": null,
+      "privacy": null,
+      "no_logging_hint": null,
+      "zdr": null,
+      "zdr_hint": null,
+      "dpa": null,
+      "dpa_hint": null,
+      "can": null,
+      "structured": null,
+      "speed_quality": null,
+      "best_quality": null,
+      "max_price": null,
+      "per_image": null,
+      "per_million": null,
+      "any_price": null,
+      "show_count_other": null,
+      "none_match": null
+    },
+    "info": {
+      "open": null,
+      "maker": null,
+      "route": null,
+      "runs_in": null,
+      "training": null,
+      "yes": null,
+      "no": null,
+      "logging": null,
+      "none": null,
+      "abuse_monitoring": null,
+      "storage": null,
+      "not_stored": null,
+      "stored": null,
+      "stored_days_other": null,
+      "unknown": null,
+      "moderation": null,
+      "transfer": null,
+      "stays_in_eu": null,
+      "sccs": null,
+      "dpa": null,
+      "available": null,
+      "not_available": null,
+      "context": null,
+      "context_tokens": null,
+      "max_size": null,
+      "price": null
+    }
   }
 }

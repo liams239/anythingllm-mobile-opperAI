@@ -126,8 +126,25 @@
       "title": "Utility",
       "anonymous_telemetry": "Anonymous telemetry",
       "tool_auto_approvals": "Tool auto-approvals",
+      "image_generation": "Image generation",
       "clear_temp_files": "Clear temporary files",
       "temp_files_cleared": "Temporary files cleared"
+    },
+    "image_generation": {
+      "page_title": "Image generation",
+      "description": "Generate images right in your chats with an Opper API key. Your normal model keeps answering, and hands image requests to the image model when you ask for a picture.",
+      "api_key": "Opper API key",
+      "get_key": "Get an API key at platform.opper.ai",
+      "model": "Image model (optional)",
+      "model_hint": "Pick a model below or type its id. Leave empty to use Opper's default image model.",
+      "save": "Save",
+      "saved": "Image generation is on",
+      "remove": "Remove API key",
+      "removed": "Opper API key removed",
+      "default_model": "Opper default",
+      "models_loading": "Loading image models...",
+      "models_error": "Could not load the image models. Tap to try again, or type a model id above.",
+      "models_none": "No image models match. You can still use the id you typed."
     },
     "tool_auto_approvals": {
       "description": "These tools run without asking for your approval. Swipe one away or tap the trash button to be asked again next time.",
@@ -261,6 +278,11 @@
       "worked_for": "Worked for {{duration}}",
       "thought_for": "Thought for {{duration}}",
       "thoughts": "Thoughts"
+    },
+    "generated_image": {
+      "missing": "Image no longer on this device",
+      "open_label": "Open generated image: {{prompt}}",
+      "share": "Share"
     },
     "file_download": {
       "saved_to": "Saved {{filename}} to {{location}}",
@@ -639,6 +661,13 @@
       "description": "Write a styled .docx from markdown with themes and an optional title page.",
       "status_creating": "Creating Word document \"{{name}}\""
     },
+    "generate_image": {
+      "name": "Image Generation",
+      "description": "Create images from a description with Opper.",
+      "needs_api_key": "Add your Opper API key in Settings > Image generation first",
+      "status_generating": "Generating image",
+      "status_generated": "Image generated"
+    },
     "create_pdf_file": {
       "name": "PDF Document",
       "description": "Turn markdown or plain text into a formatted PDF.",
@@ -769,7 +798,10 @@
       "connect": "Connect",
       "connecting": "Connecting...",
       "connect_failed": "Could not load models from {{provider}}. Check the details above, or enter a model name to use it anyway.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": "Image model",
+      "image_model_setup": "Set up image generation",
+      "image_models_failed": "Could not load the image models from Opper."
     },
     "dev_shortcut_hint_one": "Press {{count}} more time to open developer tools",
     "dev_shortcut_hint_other": "Press {{count}} more times to open developer tools",
@@ -782,7 +814,23 @@
       "memories": "Memories",
       "memories_description": "See memories about you or your preferences",
       "export_thread": "Export Chat Thread",
-      "saved_to_device": "Saved to your device"
+      "saved_to_device": "Saved to your device",
+      "usage": {
+        "title": "Usage",
+        "description": "Tokens and cost of this chat and this month",
+        "this_chat": "This chat",
+        "this_month": "This month, all chats",
+        "nothing_yet": "Nothing tracked yet",
+        "replies_one": "{{count}} reply",
+        "replies_other": "{{count}} replies",
+        "tokens": "{{input}} in · {{output}} out tokens",
+        "cached": "{{cached}} from cache",
+        "images_one": "{{count}} image",
+        "images_other": "{{count}} images",
+        "note_estimate": "Costs are estimates from Opper's list prices; images use what Opper billed when it says. Long-prompt surcharges are not included.",
+        "note_unpriced": "Replies from models without a known price count for tokens only.",
+        "note_untracked": "Replies from before this update are not counted."
+      }
     },
     "memories": {
       "global": {
@@ -1443,5 +1491,74 @@
   },
   "deep_links": {
     "finish_onboarding": "Finish setting up AnythingLLM before opening links to it"
+  },
+  "opper_models": {
+    "maker_via_host": "{{maker}} via {{host}}",
+    "no_training": "None of these models trains on your data",
+    "badges": {
+      "best": "Best",
+      "edit": "Edit",
+      "fast": "Fast",
+      "very_fast": "Very fast",
+      "no_logging": "No logging",
+      "zdr": "ZDR",
+      "pdf": "PDF",
+      "reasoning": "Reasons",
+      "trains": "Trains on data",
+      "vision": "Sees images"
+    },
+    "filters": {
+      "title": "Filters",
+      "button": "Filters",
+      "button_count_one": "Filters · {{count}}",
+      "button_count_other": "Filters · {{count}}",
+      "clear": "Clear all",
+      "privacy": "Privacy",
+      "no_logging_hint": "The route keeps no log of your prompts, not even for abuse checks",
+      "zdr": "Zero Data Retention",
+      "zdr_hint": "No logging and nothing stored. Routes that report storage as unknown are left out",
+      "dpa": "Data processing agreement (DPA)",
+      "dpa_hint": "A DPA is available for this route",
+      "can": "Can",
+      "structured": "Structured output",
+      "speed_quality": "Speed and quality",
+      "best_quality": "Best quality",
+      "max_price": "Max. price {{unit}}",
+      "per_image": "per image",
+      "per_million": "per 1M input tokens",
+      "any_price": "Any",
+      "show_count_one": "Show {{count}} model",
+      "show_count_other": "Show {{count}} models",
+      "none_match": "No models match these filters"
+    },
+    "info": {
+      "open": "Details for {{name}}",
+      "maker": "Made by",
+      "route": "Route",
+      "runs_in": "Runs in",
+      "training": "Trains on your data",
+      "yes": "Yes",
+      "no": "No",
+      "logging": "Logging",
+      "none": "None",
+      "abuse_monitoring": "For abuse checks",
+      "storage": "Content storage",
+      "not_stored": "Not stored",
+      "stored": "Stored",
+      "stored_days_one": "Stored {{count}} day",
+      "stored_days_other": "Stored {{count}} days",
+      "unknown": "Unknown",
+      "moderation": "Moderation",
+      "transfer": "Data transfer",
+      "stays_in_eu": "Stays in the EU",
+      "sccs": "Standard contractual clauses",
+      "dpa": "DPA",
+      "available": "Available",
+      "not_available": "Not available",
+      "context": "Context",
+      "context_tokens": "{{size}} tokens",
+      "max_size": "Largest size",
+      "price": "Price"
+    }
   }
 }

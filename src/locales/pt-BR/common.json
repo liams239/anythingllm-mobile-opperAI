@@ -126,8 +126,25 @@
       "title": "Utilidade",
       "anonymous_telemetry": "Telemetria anônima",
       "tool_auto_approvals": "Aprovações automáticas de ferramentas",
+      "image_generation": null,
       "clear_temp_files": "Limpar arquivos temporários",
       "temp_files_cleared": "Arquivos temporários limpos"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Estas ferramentas são executadas sem pedir sua aprovação. Deslize uma para removê-la ou toque no botão da lixeira para ser perguntado novamente na próxima vez.",
@@ -264,6 +281,11 @@
       "worked_for": "Trabalhou por {{duration}}",
       "thought_for": "Pensou por {{duration}}",
       "thoughts": "Pensamentos"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}} salvo em {{location}}",
@@ -660,6 +682,13 @@
       "description": "Escreva um .docx estilizado a partir de markdown com temas e uma página de título opcional.",
       "status_creating": "Criando documento Word \"{{name}}\""
     },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
+    },
     "create_pdf_file": {
       "name": "Documento PDF",
       "description": "Transforme markdown ou texto simples em um PDF formatado.",
@@ -800,7 +829,10 @@
       "connect": "Conectar",
       "connecting": "Conectando...",
       "connect_failed": "Não foi possível carregar os modelos de {{provider}}. Verifique os detalhes acima, ou insira o nome de um modelo para usá-lo.",
-      "model": "Modelo"
+      "model": "Modelo",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_many": "Toque {{count}} repetidamente para abrir as ferramentas de desenvolvedor",
     "dev_shortcut_hint_one": "Toque {{count}} novamente para abrir as ferramentas de desenvolvedor",
@@ -814,7 +846,25 @@
       "memories": "Lembranças",
       "memories_description": "Veja suas memórias ou preferências",
       "export_thread": "Exportar Conversa",
-      "saved_to_device": "Salvo no seu dispositivo"
+      "saved_to_device": "Salvo no seu dispositivo",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_many": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_many": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
@@ -1489,5 +1539,77 @@
   },
   "deep_links": {
     "finish_onboarding": "Termine de configurar AnythingLLM antes de abrir links para ele"
+  },
+  "opper_models": {
+    "maker_via_host": null,
+    "no_training": null,
+    "badges": {
+      "best": null,
+      "edit": null,
+      "fast": null,
+      "very_fast": null,
+      "no_logging": null,
+      "zdr": null,
+      "pdf": null,
+      "reasoning": null,
+      "trains": null,
+      "vision": null
+    },
+    "filters": {
+      "title": null,
+      "button": null,
+      "button_count_many": null,
+      "button_count_one": null,
+      "button_count_other": null,
+      "clear": null,
+      "privacy": null,
+      "no_logging_hint": null,
+      "zdr": null,
+      "zdr_hint": null,
+      "dpa": null,
+      "dpa_hint": null,
+      "can": null,
+      "structured": null,
+      "speed_quality": null,
+      "best_quality": null,
+      "max_price": null,
+      "per_image": null,
+      "per_million": null,
+      "any_price": null,
+      "show_count_many": null,
+      "show_count_one": null,
+      "show_count_other": null,
+      "none_match": null
+    },
+    "info": {
+      "open": null,
+      "maker": null,
+      "route": null,
+      "runs_in": null,
+      "training": null,
+      "yes": null,
+      "no": null,
+      "logging": null,
+      "none": null,
+      "abuse_monitoring": null,
+      "storage": null,
+      "not_stored": null,
+      "stored": null,
+      "stored_days_many": null,
+      "stored_days_one": null,
+      "stored_days_other": null,
+      "unknown": null,
+      "moderation": null,
+      "transfer": null,
+      "stays_in_eu": null,
+      "sccs": null,
+      "dpa": null,
+      "available": null,
+      "not_available": null,
+      "context": null,
+      "context_tokens": null,
+      "max_size": null,
+      "price": null
+    }
   }
 }

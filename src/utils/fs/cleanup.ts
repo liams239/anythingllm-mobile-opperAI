@@ -56,15 +56,15 @@ export async function purgeOrphanedProcessedFiles(): Promise<number> {
 
 /**
  * Storage filenames referenced by any chat, read without hydrating the chat models.
- * Only rows whose serialized response mentions a file_download action are fetched.
+ * Only rows whose serialized response mentions a file_download or generated_image action are fetched.
  */
 async function referencedGeneratedDocumentNames(): Promise<string[]> {
     const chatRows = await database.get(WorkspaceChat.table).query(
-        Q.unsafeSqlQuery(`select response from ${WorkspaceChat.table} where _status is not 'deleted' and response like '%file_download%'`)
+        Q.unsafeSqlQuery(`select response from ${WorkspaceChat.table} where _status is not 'deleted' and (response like '%file_download%' or response like '%generated_image%')`)
     ).unsafeFetchRaw() as { response: string }[];
     // Scheduled job runs store their reply the same way (see ScheduledJobRun.result)
     const runRows = await database.get(ScheduledJobRun.table).query(
-        Q.unsafeSqlQuery(`select result from ${ScheduledJobRun.table} where _status is not 'deleted' and result like '%file_download%'`)
+        Q.unsafeSqlQuery(`select result from ${ScheduledJobRun.table} where _status is not 'deleted' and (result like '%file_download%' or result like '%generated_image%')`)
     ).unsafeFetchRaw() as { result: string }[];
     return [
         ...WorkspaceChat.storageFilenamesFrom(chatRows),

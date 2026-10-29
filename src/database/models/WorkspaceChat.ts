@@ -204,6 +204,27 @@ export type IFileDownloadAction = {
 }
 
 /**
+ * An image the assistant generated (see the generate-image tool). Rendered inline under the
+ * reply. Stored in the generated-documents folder like `file_download` files, so it shares
+ * their cleanup.
+ */
+export type IGeneratedImageAction = {
+  type: 'generated_image';
+  action: {
+    /** What the image was generated from */
+    prompt: string;
+    /** Opper image model used, when known */
+    model?: string;
+    /** What Opper billed for this image in USD, when it reported it */
+    cost?: number;
+    /** Name of the file on disk inside the generated-documents folder eg: "image-<uuid>.png" */
+    storageFilename: string;
+    fileSize: number;
+    mimeType: string;
+  }
+}
+
+/**
  * A scheduled job the assistant created for the user (see the create-scheduled-job tool).
  * Rendered as a card in the chat history that opens the job's run history.
  */
@@ -256,7 +277,19 @@ export type IEmailDraftAction = {
   }
 }
 
-export type IAgentAction = IEmailAction | IEmailDraftAction | ITextAction | ITextDraftAction |ICalendarEventAction | IFileDownloadAction | IScheduledJobCreatedAction | IReminderAction;
+export type IChatUsage = {
+  /** Provider name eg "generic-openai" */
+  provider?: string;
+  model?: string;
+  /** Answered through Opper, so the reply can be priced from Opper's listing */
+  opper?: boolean;
+  promptTokens: number;
+  completionTokens: number;
+  /** Prompt tokens served from cache, when the provider reports them */
+  cachedPromptTokens?: number;
+}
+
+export type IAgentAction = IEmailAction | IEmailDraftAction | ITextAction | ITextDraftAction |ICalendarEventAction | IFileDownloadAction | IGeneratedImageAction | IScheduledJobCreatedAction | IReminderAction;
 export type WorkspaceChatResponseType = {
   textResponse: string;
   thoughts: string[];
@@ -267,6 +300,11 @@ export type WorkspaceChatResponseType = {
   /** @deprecated transient scratch space used by the old handler - kept so old rows still type check */
   currentThoughtChain?: string[];
   actions: IAgentAction[];
+  /**
+   * Which model answered and the tokens the whole turn used (every tool round), for the usage page.
+   * Missing on rows written before usage tracking.
+   */
+  usage?: IChatUsage;
   /**
    * Ordered timeline of thoughts, statuses and tool calls for this turn.
    * Optional because rows written before this field existed only carry
@@ -312,6 +350,12 @@ export default class WorkspaceChat extends Model {
       response,
       createdAt,
     };
+  }
+
+  /** Chats created at or after a moment (epoch millis) - for the usage totals of a period */
+  static async createdSince(since: number): Promise<WorkspaceChatType[]> {
+    const rows = await database.get(this.table).query(Q.where('created_at', Q.gte(since))).fetch();
+    return rows.map((row: any) => this.toWorkspaceChatObject(row) as WorkspaceChatType);
   }
 
   /**
@@ -371,7 +415,7 @@ export default class WorkspaceChat extends Model {
   }
 
   /**
-   * Storage filenames of every generated file (`file_download` action) referenced by these chats.
+   * Storage filenames of every generated file (`file_download` / `generated_image` action) referenced by these chats.
    * Handles rows whose `response` is still a JSON string.
    */
   static storageFilenamesFrom(chats: Array<Partial<WorkspaceChatType> | { response?: any }>): string[] {
@@ -383,8 +427,8 @@ export default class WorkspaceChat extends Model {
       }
       const actions: IAgentAction[] = Array.isArray(response?.actions) ? response.actions : [];
       for (const action of actions) {
-        if (action?.type !== 'file_download') continue;
-        const storageFilename = (action as IFileDownloadAction).action?.storageFilename;
+        if (action?.type !== 'file_download' && action?.type !== 'generated_image') continue;
+        const storageFilename = (action as IFileDownloadAction | IGeneratedImageAction).action?.storageFilename;
         if (storageFilename) names.push(storageFilename);
       }
     }

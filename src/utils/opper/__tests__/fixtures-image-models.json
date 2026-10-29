@@ -1,0 +1,1088 @@
+{
+  "models": [
+    {
+      "id": "bytedance:ap/seedream-4.5",
+      "type": "image",
+      "name": "Seedream 4.5",
+      "capabilities": [
+        "image_generation",
+        "image_edit"
+      ],
+      "speed": "fast",
+      "quality": "good",
+      "region": "GLOBAL",
+      "pricing": {
+        "billing_unit": "per_generation",
+        "rates": [
+          {
+            "unit": "per_generation",
+            "amount": 0.04
+          }
+        ],
+        "price_per_generation": 0.04
+      },
+      "provider": {
+        "slug": "byteplus",
+        "display_name": "BytePlus",
+        "owner_country": "CN"
+      },
+      "maker": {
+        "slug": "bytedance",
+        "display_name": "ByteDance",
+        "country": "CN"
+      },
+      "compliance": {
+        "residency": "GLOBAL",
+        "inference_location": "GLOBAL",
+        "storage_location": "MY",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "retention_days": 180,
+        "moderation": "default_on",
+        "caching": "implicit",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "bytedance:ap"
+      },
+      "params": {
+        "image": {
+          "sizes": [
+            "2048x2048",
+            "2560x1440",
+            "1440x2560",
+            "2304x1728",
+            "1728x2304",
+            "2496x1664",
+            "1664x2496",
+            "3024x1296"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deepinfra/Bria/Bria-3.2",
+      "type": "image",
+      "name": "Bria 3.2",
+      "capabilities": [
+        "image_generation"
+      ],
+      "speed": "fast",
+      "quality": "good",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "reported_cost",
+        "rates": [
+          {
+            "unit": "per_generation",
+            "amount": 0.04
+          }
+        ],
+        "price_per_generation": 0.04,
+        "reported_cost_markup": 1
+      },
+      "provider": {
+        "slug": "deepinfra",
+        "display_name": "DeepInfra",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "bria",
+        "display_name": "Bria",
+        "country": "IL"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": false,
+          "moderation": false,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "none",
+        "moderation": "none",
+        "caching": "unknown",
+        "content_storage": "unknown",
+        "dpa_available": true,
+        "third_party_access": null,
+        "transfer_mechanism": "unknown",
+        "route_id": "deepinfra/us"
+      },
+      "params": {}
+    },
+    {
+      "id": "deepinfra/black-forest-labs/FLUX-2-pro",
+      "type": "image",
+      "name": "FLUX.2 [pro]",
+      "capabilities": [
+        "image_generation"
+      ],
+      "speed": "fast",
+      "quality": "good",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "reported_cost",
+        "rates": [
+          {
+            "unit": "per_megapixel",
+            "amount": 0.015
+          }
+        ],
+        "price_per_megapixel": 0.015,
+        "price_first_megapixel": 0.03,
+        "reported_cost_markup": 1
+      },
+      "provider": {
+        "slug": "deepinfra",
+        "display_name": "DeepInfra",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "black-forest-labs",
+        "display_name": "Black Forest Labs",
+        "country": "DE"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": false,
+          "moderation": false,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "none",
+        "moderation": "none",
+        "caching": "unknown",
+        "content_storage": "unknown",
+        "dpa_available": true,
+        "third_party_access": null,
+        "transfer_mechanism": "unknown",
+        "route_id": "deepinfra/us"
+      },
+      "params": {
+        "image": {
+          "sizes": [
+            "1024x1024",
+            "1024x768",
+            "768x1024",
+            "1344x768",
+            "768x1344",
+            "1440x1024",
+            "1024x1440",
+            "1280x896",
+            "896x1280"
+          ]
+        }
+      }
+    },
+    {
+      "id": "fal/flux-1-schnell",
+      "type": "image",
+      "name": "FLUX.1 [schnell]",
+      "capabilities": [
+        "image_generation"
+      ],
+      "speed": "very_fast",
+      "quality": "good",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_megapixel",
+        "rates": [
+          {
+            "unit": "per_megapixel",
+            "amount": 0.003
+          }
+        ],
+        "price_per_megapixel": 0.003
+      },
+      "provider": {
+        "slug": "fal",
+        "display_name": "fal.ai",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "black-forest-labs",
+        "display_name": "Black Forest Labs",
+        "country": "DE"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "unknown",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "fal/api-us"
+      },
+      "params": {
+        "image": {
+          "sizes": [
+            "1024x1024",
+            "1280x720",
+            "720x1280",
+            "1024x768",
+            "768x1024",
+            "1536x1024",
+            "1024x1536",
+            "2048x2048"
+          ]
+        }
+      }
+    },
+    {
+      "id": "fal/ideogram-v4.5",
+      "type": "image",
+      "name": "Ideogram 4.5",
+      "capabilities": [
+        "image_generation"
+      ],
+      "speed": "medium",
+      "quality": "great",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_image",
+        "rates": [
+          {
+            "unit": "per_image",
+            "amount": 0.22,
+            "dimensions": {
+              "quality": "high",
+              "resolution": "auto"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.03,
+            "dimensions": {
+              "quality": "low",
+              "resolution": "auto"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.06,
+            "dimensions": {
+              "quality": "medium",
+              "resolution": "auto"
+            }
+          }
+        ],
+        "image_prices": {
+          "high": {
+            "auto": 0.22
+          },
+          "low": {
+            "auto": 0.03
+          },
+          "medium": {
+            "auto": 0.06
+          }
+        }
+      },
+      "provider": {
+        "slug": "fal",
+        "display_name": "fal.ai",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "ideogram",
+        "display_name": "Ideogram",
+        "country": "CA"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "unknown",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "fal/api-us"
+      },
+      "params": {
+        "image": {
+          "sizes": [
+            "1024x1024",
+            "1280x720",
+            "720x1280",
+            "1152x864",
+            "864x1152",
+            "2048x2048",
+            "1024x3072",
+            "1120x896",
+            "1152x2944",
+            "1248x3328",
+            "1248x832",
+            "1280x3072",
+            "1280x800",
+            "1296x3168",
+            "1440x2560",
+            "1440x2880",
+            "1440x720",
+            "1600x2560",
+            "1664x2496",
+            "1728x2304",
+            "1792x2240",
+            "2240x1792",
+            "2304x1728",
+            "2496x1664",
+            "2560x1440",
+            "2560x1600",
+            "2880x1440",
+            "2944x1152",
+            "3072x1024",
+            "3072x1280",
+            "3168x1296",
+            "3328x1248",
+            "720x1440",
+            "800x1280",
+            "832x1248",
+            "896x1120"
+          ]
+        }
+      }
+    },
+    {
+      "id": "openai/gpt-image-1",
+      "type": "image",
+      "name": "GPT Image 1",
+      "capabilities": [
+        "image_generation",
+        "image_edit"
+      ],
+      "speed": "slow",
+      "quality": "best",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_image",
+        "rates": [
+          {
+            "unit": "per_image",
+            "amount": 0.167,
+            "dimensions": {
+              "quality": "high",
+              "size": "1024x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.25,
+            "dimensions": {
+              "quality": "high",
+              "size": "1024x1536"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.25,
+            "dimensions": {
+              "quality": "high",
+              "size": "1536x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.167,
+            "dimensions": {
+              "quality": "high",
+              "resolution": "auto"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.011,
+            "dimensions": {
+              "quality": "low",
+              "size": "1024x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.016,
+            "dimensions": {
+              "quality": "low",
+              "size": "1024x1536"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.016,
+            "dimensions": {
+              "quality": "low",
+              "size": "1536x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.011,
+            "dimensions": {
+              "quality": "low",
+              "resolution": "auto"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.042,
+            "dimensions": {
+              "quality": "medium",
+              "size": "1024x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.063,
+            "dimensions": {
+              "quality": "medium",
+              "size": "1024x1536"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.063,
+            "dimensions": {
+              "quality": "medium",
+              "size": "1536x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.042,
+            "dimensions": {
+              "quality": "medium",
+              "resolution": "auto"
+            }
+          }
+        ],
+        "image_prices": {
+          "high": {
+            "1024x1024": 0.167,
+            "1024x1536": 0.25,
+            "1536x1024": 0.25,
+            "auto": 0.167
+          },
+          "low": {
+            "1024x1024": 0.011,
+            "1024x1536": 0.016,
+            "1536x1024": 0.016,
+            "auto": 0.011
+          },
+          "medium": {
+            "1024x1024": 0.042,
+            "1024x1536": 0.063,
+            "1536x1024": 0.063,
+            "auto": 0.042
+          }
+        }
+      },
+      "provider": {
+        "slug": "openai",
+        "display_name": "OpenAI",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "openai",
+        "display_name": "OpenAI",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "retention_days": 30,
+        "moderation": "default_on",
+        "caching": "implicit",
+        "cache_scope": "organization",
+        "cache_ttl_seconds": 1800,
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "openai/api-us"
+      },
+      "params": {
+        "image": {
+          "sizes": [
+            "1024x1024",
+            "1536x1024",
+            "1024x1536",
+            "auto"
+          ]
+        }
+      }
+    },
+    {
+      "id": "openai/gpt-image-2",
+      "type": "image",
+      "name": "GPT Image 2",
+      "capabilities": [
+        "image_generation",
+        "image_edit"
+      ],
+      "speed": "medium",
+      "quality": "best",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "rates": [
+          {
+            "unit": "per_image",
+            "amount": 0.211,
+            "dimensions": {
+              "quality": "high",
+              "size": "1024x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.165,
+            "dimensions": {
+              "quality": "high",
+              "size": "1024x1536"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.165,
+            "dimensions": {
+              "quality": "high",
+              "size": "1536x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.1695,
+            "dimensions": {
+              "quality": "high",
+              "size": "2048x1152"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.42816,
+            "dimensions": {
+              "quality": "high",
+              "size": "2048x2048"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.40026,
+            "dimensions": {
+              "quality": "high",
+              "size": "2160x3840"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.40026,
+            "dimensions": {
+              "quality": "high",
+              "size": "3840x2160"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.211,
+            "dimensions": {
+              "quality": "high",
+              "resolution": "auto"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.006,
+            "dimensions": {
+              "quality": "low",
+              "size": "1024x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.005,
+            "dimensions": {
+              "quality": "low",
+              "size": "1024x1536"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.005,
+            "dimensions": {
+              "quality": "low",
+              "size": "1536x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.00471,
+            "dimensions": {
+              "quality": "low",
+              "size": "2048x1152"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.01191,
+            "dimensions": {
+              "quality": "low",
+              "size": "2048x2048"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.01113,
+            "dimensions": {
+              "quality": "low",
+              "size": "2160x3840"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.01113,
+            "dimensions": {
+              "quality": "low",
+              "size": "3840x2160"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.006,
+            "dimensions": {
+              "quality": "low",
+              "resolution": "auto"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.053,
+            "dimensions": {
+              "quality": "medium",
+              "size": "1024x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.041,
+            "dimensions": {
+              "quality": "medium",
+              "size": "1024x1536"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.041,
+            "dimensions": {
+              "quality": "medium",
+              "size": "1536x1024"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.04239,
+            "dimensions": {
+              "quality": "medium",
+              "size": "2048x1152"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.10704,
+            "dimensions": {
+              "quality": "medium",
+              "size": "2048x2048"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.10008,
+            "dimensions": {
+              "quality": "medium",
+              "size": "2160x3840"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.10008,
+            "dimensions": {
+              "quality": "medium",
+              "size": "3840x2160"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.053,
+            "dimensions": {
+              "quality": "medium",
+              "resolution": "auto"
+            }
+          }
+        ],
+        "input": [
+          5
+        ],
+        "output": [
+          30
+        ],
+        "image_input": [
+          8
+        ],
+        "image_output": [
+          30
+        ],
+        "image_prices": {
+          "high": {
+            "1024x1024": 0.211,
+            "1024x1536": 0.165,
+            "1536x1024": 0.165,
+            "2048x1152": 0.1695,
+            "2048x2048": 0.42816,
+            "2160x3840": 0.40026,
+            "3840x2160": 0.40026,
+            "auto": 0.211
+          },
+          "low": {
+            "1024x1024": 0.006,
+            "1024x1536": 0.005,
+            "1536x1024": 0.005,
+            "2048x1152": 0.00471,
+            "2048x2048": 0.01191,
+            "2160x3840": 0.01113,
+            "3840x2160": 0.01113,
+            "auto": 0.006
+          },
+          "medium": {
+            "1024x1024": 0.053,
+            "1024x1536": 0.041,
+            "1536x1024": 0.041,
+            "2048x1152": 0.04239,
+            "2048x2048": 0.10704,
+            "2160x3840": 0.10008,
+            "3840x2160": 0.10008,
+            "auto": 0.053
+          }
+        }
+      },
+      "provider": {
+        "slug": "openai",
+        "display_name": "OpenAI",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "openai",
+        "display_name": "OpenAI",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "retention_days": 30,
+        "moderation": "default_on",
+        "caching": "implicit",
+        "cache_scope": "organization",
+        "cache_ttl_seconds": 1800,
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "openai/api-us"
+      },
+      "params": {
+        "image": {
+          "sizes": [
+            "1024x1024",
+            "1536x1024",
+            "1024x1536",
+            "2048x2048",
+            "2048x1152",
+            "3840x2160",
+            "2160x3840",
+            "auto"
+          ]
+        }
+      }
+    },
+    {
+      "id": "openai/gpt-image-2.5-sunburst",
+      "type": "image",
+      "name": "GPT Image 2.5 Sunburst",
+      "capabilities": [
+        "image_generation",
+        "image_edit"
+      ],
+      "speed": "medium",
+      "quality": "best",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          5
+        ],
+        "output": [
+          0
+        ],
+        "cached_input": [
+          1.25
+        ],
+        "image_input": [
+          8
+        ],
+        "image_cached_input": [
+          2
+        ],
+        "image_output": [
+          30
+        ]
+      },
+      "provider": {
+        "slug": "openai",
+        "display_name": "OpenAI",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "openai",
+        "display_name": "OpenAI",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "retention_days": 30,
+        "moderation": "default_on",
+        "caching": "implicit",
+        "cache_scope": "organization",
+        "cache_ttl_seconds": 1800,
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "openai/api-us"
+      },
+      "params": {
+        "image": {
+          "sizes": [
+            "1024x1024",
+            "1536x1024",
+            "1024x1536",
+            "auto"
+          ]
+        }
+      }
+    },
+    {
+      "id": "pruna/p-image",
+      "type": "image",
+      "name": "Pruna P-Image",
+      "capabilities": [
+        "image_generation"
+      ],
+      "speed": "very_fast",
+      "quality": "good",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_generation",
+        "rates": [
+          {
+            "unit": "per_generation",
+            "amount": 0.002
+          }
+        ],
+        "price_per_generation": 0.002
+      },
+      "provider": {
+        "slug": "pruna",
+        "display_name": "Pruna",
+        "owner_country": "DE"
+      },
+      "maker": {
+        "slug": "pruna",
+        "display_name": "Pruna AI",
+        "country": "DE"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "unknown",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "pruna/api-us"
+      },
+      "params": {}
+    },
+    {
+      "id": "xai/grok-imagine-image-2.0",
+      "type": "image",
+      "name": "Grok Imagine Image 2.0",
+      "capabilities": [
+        "image_generation",
+        "image_edit"
+      ],
+      "speed": "medium",
+      "quality": "best",
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_image",
+        "rates": [
+          {
+            "unit": "per_image",
+            "amount": 0.04,
+            "dimensions": {
+              "quality": "low",
+              "resolution": "1k"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.06,
+            "dimensions": {
+              "quality": "low",
+              "resolution": "2k"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.06,
+            "dimensions": {
+              "quality": "medium",
+              "resolution": "1k"
+            }
+          },
+          {
+            "unit": "per_image",
+            "amount": 0.08,
+            "dimensions": {
+              "quality": "medium",
+              "resolution": "2k"
+            }
+          }
+        ],
+        "image_prices": {
+          "low": {
+            "1k": 0.04,
+            "2k": 0.06
+          },
+          "medium": {
+            "1k": 0.06,
+            "2k": 0.08
+          }
+        }
+      },
+      "provider": {
+        "slug": "xai",
+        "display_name": "xAI",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "xai",
+        "display_name": "xAI",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": false,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "retention_days": 30,
+        "moderation": "default_on",
+        "caching": "implicit",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "xai/grok-us"
+      },
+      "params": {}
+    }
+  ],
+  "total": 10,
+  "offset": 0,
+  "limit": 50
+}

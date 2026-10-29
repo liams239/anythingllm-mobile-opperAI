@@ -1,0 +1,728 @@
+{
+  "models": [
+    {
+      "id": "abliteration/abliterated-model",
+      "type": "llm",
+      "name": "Abliterated Model",
+      "cost": 0.185,
+      "capabilities": [
+        "text",
+        "tools",
+        "vision",
+        "structured_output",
+        "reasoning",
+        "thinking"
+      ],
+      "speed": "medium",
+      "quality": "great",
+      "context_window": 262144,
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          1
+        ],
+        "output": [
+          3
+        ],
+        "cached_input": [
+          0.1
+        ]
+      },
+      "provider": {
+        "slug": "abliteration",
+        "display_name": "abliteration.ai",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "abliteration",
+        "display_name": "abliteration.ai",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": false,
+          "moderation": null,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "none",
+        "moderation": "unknown",
+        "caching": "implicit",
+        "content_storage": "ephemeral",
+        "dpa_available": false,
+        "third_party_access": null,
+        "transfer_mechanism": "unknown",
+        "route_id": "abliteration"
+      }
+    },
+    {
+      "id": "alibaba:eu/qwen3-vl-plus",
+      "type": "llm",
+      "name": "Qwen3-VL-Plus",
+      "cost": 0.108,
+      "capabilities": [
+        "text",
+        "tools",
+        "reasoning",
+        "vision",
+        "structured_output"
+      ],
+      "speed": "fast",
+      "quality": "good",
+      "context_window": 262144,
+      "region": "EU",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "thresholds": [
+          131072
+        ],
+        "input": [
+          0.2,
+          0.6
+        ],
+        "output": [
+          1.6,
+          4.8
+        ]
+      },
+      "provider": {
+        "slug": "alibaba",
+        "display_name": "Alibaba Cloud",
+        "owner_country": "CN"
+      },
+      "maker": {
+        "slug": "alibaba",
+        "display_name": "Alibaba",
+        "country": "CN"
+      },
+      "compliance": {
+        "residency": "EU",
+        "country": "Germany",
+        "inference_location": "DE",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "implicit",
+        "cache_scope": "organization",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "eu_resident",
+        "route_id": "alibaba:eu"
+      }
+    },
+    {
+      "id": "alibaba:global/deepseek-v4-flash-0731",
+      "type": "llm",
+      "name": "DeepSeek V4 Flash (0731)",
+      "cost": 0.108,
+      "capabilities": [
+        "text",
+        "tools",
+        "structured_output",
+        "reasoning",
+        "thinking"
+      ],
+      "speed": "medium",
+      "quality": "great",
+      "context_window": 1048576,
+      "region": "GLOBAL",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          0.4476
+        ],
+        "output": [
+          1.3428
+        ]
+      },
+      "provider": {
+        "slug": "alibaba",
+        "display_name": "Alibaba Cloud",
+        "owner_country": "CN"
+      },
+      "maker": {
+        "slug": "deepseek",
+        "display_name": "DeepSeek",
+        "country": "CN"
+      },
+      "compliance": {
+        "residency": "GLOBAL",
+        "inference_location": "GLOBAL",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "implicit",
+        "cache_scope": "organization",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "alibaba:global"
+      }
+    },
+    {
+      "id": "alibaba:global/glm-5.1",
+      "type": "llm",
+      "name": "GLM 5.1",
+      "cost": 0.198,
+      "capabilities": [
+        "text",
+        "tools",
+        "reasoning",
+        "structured_output",
+        "thinking"
+      ],
+      "speed": "medium",
+      "quality": "best",
+      "context_window": 202752,
+      "region": "GLOBAL",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "thresholds": [
+          32768
+        ],
+        "input": [
+          0.8952,
+          1.1936
+        ],
+        "output": [
+          3.5808,
+          4.1776
+        ],
+        "cached_input": [
+          0.17904,
+          0.23872000000000002
+        ]
+      },
+      "provider": {
+        "slug": "alibaba",
+        "display_name": "Alibaba Cloud",
+        "owner_country": "CN"
+      },
+      "maker": {
+        "slug": "zai",
+        "display_name": "Z.ai",
+        "country": "CN"
+      },
+      "compliance": {
+        "residency": "GLOBAL",
+        "inference_location": "GLOBAL",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "implicit",
+        "cache_scope": "organization",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "alibaba:global"
+      },
+      "aliases": [
+        "alibaba:eu/glm-5.1"
+      ]
+    },
+    {
+      "id": "alibaba:global/qwen3.8-max",
+      "type": "llm",
+      "name": "Qwen3.8-Max",
+      "cost": 0.271,
+      "capabilities": [
+        "text",
+        "tools",
+        "reasoning",
+        "vision",
+        "structured_output",
+        "thinking"
+      ],
+      "speed": "medium",
+      "quality": "great",
+      "context_window": 983616,
+      "region": "GLOBAL",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          2
+        ],
+        "output": [
+          6
+        ],
+        "cached_input": [
+          0.25
+        ],
+        "openai_web_search_price_per_call": 0.01
+      },
+      "provider": {
+        "slug": "alibaba",
+        "display_name": "Alibaba Cloud",
+        "owner_country": "CN"
+      },
+      "maker": {
+        "slug": "alibaba",
+        "display_name": "Alibaba",
+        "country": "CN"
+      },
+      "compliance": {
+        "residency": "GLOBAL",
+        "inference_location": "GLOBAL",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "implicit",
+        "cache_scope": "organization",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "alibaba:global"
+      },
+      "aliases": [
+        "alibaba:eu/qwen3.8-max",
+        "alibaba/qwen3.8-max"
+      ]
+    },
+    {
+      "id": "anthropic/claude-fable-5",
+      "type": "llm",
+      "name": "Claude Fable 5",
+      "cost": 0.579,
+      "capabilities": [
+        "text",
+        "vision",
+        "structured_output",
+        "tools",
+        "pdf",
+        "reasoning"
+      ],
+      "speed": "slow",
+      "quality": "best",
+      "context_window": 1000000,
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          10
+        ],
+        "output": [
+          50
+        ],
+        "cached_input": [
+          1
+        ],
+        "cache_creation": [
+          12.5
+        ],
+        "cache_creation_1h": [
+          20
+        ]
+      },
+      "provider": {
+        "slug": "anthropic",
+        "display_name": "Anthropic",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "anthropic",
+        "display_name": "Anthropic",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "explicit",
+        "cache_scope": "organization",
+        "cache_ttl_seconds": 300,
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "anthropic-direct/api-us"
+      }
+    },
+    {
+      "id": "anthropic/claude-fable-5-1",
+      "type": "llm",
+      "name": "Claude Fable 5.1",
+      "cost": 0.579,
+      "capabilities": [
+        "reasoning",
+        "text",
+        "vision",
+        "structured_output",
+        "tools",
+        "pdf"
+      ],
+      "speed": "slow",
+      "quality": "best",
+      "context_window": 1000000,
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          10
+        ],
+        "output": [
+          50
+        ],
+        "cached_input": [
+          0.25
+        ],
+        "cache_creation": [
+          12.5
+        ],
+        "cache_creation_1h": [
+          20
+        ],
+        "web_search_price_per_request": 0.01
+      },
+      "provider": {
+        "slug": "anthropic",
+        "display_name": "Anthropic",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "anthropic",
+        "display_name": "Anthropic",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "explicit",
+        "cache_scope": "organization",
+        "cache_ttl_seconds": 300,
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "anthropic-direct/api-us"
+      }
+    },
+    {
+      "id": "anthropic/claude-haiku-5-5",
+      "type": "llm",
+      "name": "Claude Haiku 5.5",
+      "cost": 0.044,
+      "capabilities": [
+        "text",
+        "vision",
+        "structured_output",
+        "tools",
+        "pdf",
+        "reasoning"
+      ],
+      "speed": "fast",
+      "quality": "good",
+      "context_window": 1000000,
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          0.1
+        ],
+        "output": [
+          0.5
+        ],
+        "cached_input": [
+          0.01
+        ],
+        "cache_creation": [
+          0.125
+        ],
+        "cache_creation_1h": [
+          0.2
+        ],
+        "input_surcharge_threshold_tokens": 100000,
+        "input_surcharge_multiplier": 5,
+        "output_surcharge_multiplier": 5
+      },
+      "provider": {
+        "slug": "anthropic",
+        "display_name": "Anthropic",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "anthropic",
+        "display_name": "Anthropic",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": true,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "explicit",
+        "cache_scope": "organization",
+        "cache_ttl_seconds": 300,
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "anthropic-direct/api-us"
+      }
+    },
+    {
+      "id": "aws/gpt-5.6-luna",
+      "type": "llm",
+      "name": "GPT-5.6 Luna",
+      "cost": 0.089,
+      "capabilities": [
+        "text",
+        "tools",
+        "vision",
+        "structured_output",
+        "reasoning",
+        "pdf"
+      ],
+      "speed": "fast",
+      "quality": "high",
+      "context_window": 1000000,
+      "region": "GLOBAL",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          0.2
+        ],
+        "output": [
+          1.2
+        ],
+        "cached_input": [
+          0.02
+        ],
+        "cache_creation": [
+          0.25
+        ],
+        "input_surcharge_threshold_tokens": 272000,
+        "input_surcharge_multiplier": 2,
+        "output_surcharge_multiplier": 1.5
+      },
+      "provider": {
+        "slug": "aws-bedrock",
+        "display_name": "AWS",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "openai",
+        "display_name": "OpenAI",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "GLOBAL",
+        "inference_location": "GLOBAL",
+        "storage_location": "GLOBAL",
+        "zdr": {
+          "logging": false,
+          "moderation": true,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "none",
+        "moderation": "mandatory",
+        "caching": "unknown",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "aws-bedrock/openai-global"
+      }
+    },
+    {
+      "id": "aws/claude-sonnet-5",
+      "type": "llm",
+      "name": "Claude Sonnet 5",
+      "cost": 0.342,
+      "capabilities": [
+        "text",
+        "vision",
+        "structured_output",
+        "tools",
+        "pdf",
+        "reasoning"
+      ],
+      "speed": "medium",
+      "quality": "great",
+      "context_window": 1000000,
+      "region": "EU",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          2.2
+        ],
+        "output": [
+          11
+        ],
+        "cached_input": [
+          0.22
+        ],
+        "cache_creation": [
+          2.75
+        ],
+        "cache_creation_1h": [
+          4.4
+        ]
+      },
+      "provider": {
+        "slug": "aws-bedrock",
+        "display_name": "AWS",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "anthropic",
+        "display_name": "Anthropic",
+        "country": "US"
+      },
+      "compliance": {
+        "residency": "EU",
+        "country": "Sweden",
+        "inference_location": "SE",
+        "zdr": {
+          "logging": false,
+          "moderation": false,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "none",
+        "moderation": "mandatory",
+        "caching": "unknown",
+        "content_storage": "unknown",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "eu_resident",
+        "route_id": "aws-bedrock/eu-north-1"
+      }
+    },
+    {
+      "id": "arcee/moonshotai/kimi-k3",
+      "type": "llm",
+      "name": "Kimi K3",
+      "cost": 0.388,
+      "capabilities": [
+        "text",
+        "tools",
+        "vision",
+        "structured_output",
+        "reasoning"
+      ],
+      "speed": "medium",
+      "quality": "great",
+      "context_window": 1048576,
+      "region": "US",
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          3
+        ],
+        "output": [
+          15
+        ],
+        "cached_input": [
+          0.3
+        ]
+      },
+      "provider": {
+        "slug": "arcee",
+        "display_name": "Arcee",
+        "owner_country": "US"
+      },
+      "maker": {
+        "slug": "moonshot",
+        "display_name": "Moonshot AI",
+        "country": "CN"
+      },
+      "compliance": {
+        "residency": "US",
+        "country": "United States",
+        "inference_location": "US",
+        "zdr": {
+          "logging": true,
+          "moderation": true,
+          "caching": null,
+          "training": false,
+          "subprocessors": null
+        },
+        "training": "no",
+        "logging": "abuse_monitoring",
+        "moderation": "default_on",
+        "caching": "unknown",
+        "content_storage": "retained",
+        "dpa_available": true,
+        "third_party_access": true,
+        "transfer_mechanism": "sccs",
+        "route_id": "arcee/api-us"
+      }
+    }
+  ],
+  "total": 970,
+  "offset": 0,
+  "limit": 50
+}

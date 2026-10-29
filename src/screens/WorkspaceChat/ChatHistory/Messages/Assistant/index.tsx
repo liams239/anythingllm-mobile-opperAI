@@ -7,6 +7,7 @@ import ActivityChain from "./ActivityChain";
 import CitationsContainer from "./Citations";
 import ActionsContainer from "./Actions";
 import FileDownloadCards from "./FileDownloadCard";
+import GeneratedImageCards from "./GeneratedImageCard";
 import ScheduledJobCreatedCards from "./ScheduledJobCreatedCard";
 import ReminderCards from "./ReminderCard";
 import { CalendarEventCards, EmailDraftCards, TextDraftCards } from "./DraftCards";
@@ -46,6 +47,7 @@ export default memo(function AssistantMessage({ chat }: { chat: DynamicChatMessa
             ) : (
                 <TextResponseContainer uuid={chat.uuid} textResponse={response?.textResponse} metrics={response?.metrics} onLongPress={handleLongPress} />
             )}
+            <GeneratedImageCards actions={response?.actions} isLoading={chat.isLoading} />
             <FileDownloadCards actions={response?.actions} isLoading={chat.isLoading} />
             <ScheduledJobCreatedCards actions={response?.actions} isLoading={chat.isLoading} />
             <ReminderCards actions={response?.actions} isLoading={chat.isLoading} />

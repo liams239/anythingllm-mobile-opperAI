@@ -1,5 +1,6 @@
 import BaseOpenAILikeProvider from "../baseOpenAILikeProvider";
 import OpenAILite from "@/utils/openai";
+import { isOpperUrl } from "@/utils/opper";
 
 export interface OpenAICompatibleConfig {
   provider: string;
@@ -55,7 +56,13 @@ class OpenAICompatible extends BaseOpenAILikeProvider {
    * OpenAI itself uses `OpenAIProvider` (Responses API), which always reports usage.
    */
   protected override supportsStreamUsage(): boolean {
-    return false;
+    // Opper's compatibility endpoint reports usage like OpenAI, so its token counts are real
+    return this.usesOpper;
+  }
+
+  /** Whether this connection points at Opper - its replies can then be priced from Opper's listing */
+  get usesOpper(): boolean {
+    return isOpperUrl(this.baseURL);
   }
 
   protected log = (text: string, ...args: any[]) => {

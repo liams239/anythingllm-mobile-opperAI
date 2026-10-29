@@ -126,8 +126,25 @@
       "title": "उपयोगिता",
       "anonymous_telemetry": "अनामित टेलीमेट्री",
       "tool_auto_approvals": "टूल ऑटो-अनुमोदन",
+      "image_generation": null,
       "clear_temp_files": "अस्थायी फ़ाइलें साफ करें",
       "temp_files_cleared": "अस्थायी फ़ाइलें साफ कर दी गईं"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "ये टूल आपकी अनुमति माँगे बिना चलते हैं। अगली बार फिर से पूछे जाने के लिए किसी एक को स्वाइप करके हटाएँ या ट्रैश बटन पर टैप करें।",
@@ -261,6 +278,11 @@
       "worked_for": "{{duration}} के लिए काम किया",
       "thought_for": "{{duration}} के लिए सोचा",
       "thoughts": "विचार"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}} को {{location}} में सहेजा गया",
@@ -639,6 +661,13 @@
       "description": "थीम और एक वैकल्पिक शीर्षक पृष्ठ के साथ markdown से एक स्टाइल किया हुआ .docx लिखें।",
       "status_creating": "Word दस्तावेज़ \"{{name}}\" बना रहे हैं"
     },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
+    },
     "create_pdf_file": {
       "name": "PDF दस्तावेज़",
       "description": "markdown या सादे पाठ को एक स्वरूपित PDF में बदलें।",
@@ -769,7 +798,10 @@
       "connect": "जुड़ें",
       "connecting": "जुड़ रहा है...",
       "connect_failed": "{{provider}} से मॉडल लोड नहीं हो पाए। ऊपर दिए गए विवरण की जांच करें, या फिर मॉडल का नाम दर्ज करके इसका उपयोग करें।",
-      "model": "मॉडल"
+      "model": "मॉडल",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_one": "डेवलपर उपकरण खोलने के लिए {{count}} अधिक बार दबाएँ",
     "dev_shortcut_hint_other": "डेवलपर उपकरण खोलने के लिए {{count}} अधिक बार दबाएँ",
@@ -782,7 +814,23 @@
       "memories": "स्मृति",
       "memories_description": "आपके बारे में या आपकी प्राथमिकताओं के बारे में स्मृति देखें",
       "export_thread": "चैट धागा निर्यात करें",
-      "saved_to_device": "आपके डिवाइस में सहेजा गया"
+      "saved_to_device": "आपके डिवाइस में सहेजा गया",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
@@ -1443,5 +1491,74 @@
   },
   "deep_links": {
     "finish_onboarding": "इसके लिंक खोलने से पहले AnythingLLM सेटअप पूरा करें"
+  },
+  "opper_models": {
+    "maker_via_host": null,
+    "no_training": null,
+    "badges": {
+      "best": null,
+      "edit": null,
+      "fast": null,
+      "very_fast": null,
+      "no_logging": null,
+      "zdr": null,
+      "pdf": null,
+      "reasoning": null,
+      "trains": null,
+      "vision": null
+    },
+    "filters": {
+      "title": null,
+      "button": null,
+      "button_count_one": null,
+      "button_count_other": null,
+      "clear": null,
+      "privacy": null,
+      "no_logging_hint": null,
+      "zdr": null,
+      "zdr_hint": null,
+      "dpa": null,
+      "dpa_hint": null,
+      "can": null,
+      "structured": null,
+      "speed_quality": null,
+      "best_quality": null,
+      "max_price": null,
+      "per_image": null,
+      "per_million": null,
+      "any_price": null,
+      "show_count_one": null,
+      "show_count_other": null,
+      "none_match": null
+    },
+    "info": {
+      "open": null,
+      "maker": null,
+      "route": null,
+      "runs_in": null,
+      "training": null,
+      "yes": null,
+      "no": null,
+      "logging": null,
+      "none": null,
+      "abuse_monitoring": null,
+      "storage": null,
+      "not_stored": null,
+      "stored": null,
+      "stored_days_one": null,
+      "stored_days_other": null,
+      "unknown": null,
+      "moderation": null,
+      "transfer": null,
+      "stays_in_eu": null,
+      "sccs": null,
+      "dpa": null,
+      "available": null,
+      "not_available": null,
+      "context": null,
+      "context_tokens": null,
+      "max_size": null,
+      "price": null
+    }
   }
 }

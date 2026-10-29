@@ -126,8 +126,25 @@
       "title": "實用程式",
       "anonymous_telemetry": "匿名遙測",
       "tool_auto_approvals": "工具自動核准",
+      "image_generation": null,
       "clear_temp_files": "清除暫存檔案",
       "temp_files_cleared": "暫存檔案已清除"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "這些工具執行時不會請求你的核准。滑動移除或點選垃圾桶按鈕，下次將再次詢問。",
@@ -258,6 +275,11 @@
       "worked_for": "工作了 {{duration}}",
       "thought_for": "思考了 {{duration}}",
       "thoughts": "思考內容"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "已將 {{filename}} 保存到 {{location}}",
@@ -618,6 +640,13 @@
       "description": "使用主題和選用標題頁面從 Markdown 撰寫樣式化的 .docx。",
       "status_creating": "正在建立 Word 文件「{{name}}」"
     },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
+    },
     "create_pdf_file": {
       "name": "PDF 文件",
       "description": "將 Markdown 或純文字轉換為格式化的 PDF。",
@@ -738,7 +767,10 @@
       "connect": "連接",
       "connecting": "正在連接...",
       "connect_failed": "無法從 {{provider}} 載入模型。請查看上方詳細資訊，或輸入模型名稱以便使用。",
-      "model": "模型"
+      "model": "模型",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "再按 {{count}} 次以開啟開發者工具",
     "thread_menu": {
@@ -750,7 +782,21 @@
       "memories": "記憶",
       "memories_description": "查看關於您或您的偏好設定的記憶",
       "export_thread": "匯出聊天執行緒",
-      "saved_to_device": "已保存到您的裝置"
+      "saved_to_device": "已保存到您的裝置",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
@@ -1397,5 +1443,71 @@
   },
   "deep_links": {
     "finish_onboarding": "在開啟連結到它之前完成設定 AnythingLLM"
+  },
+  "opper_models": {
+    "maker_via_host": null,
+    "no_training": null,
+    "badges": {
+      "best": null,
+      "edit": null,
+      "fast": null,
+      "very_fast": null,
+      "no_logging": null,
+      "zdr": null,
+      "pdf": null,
+      "reasoning": null,
+      "trains": null,
+      "vision": null
+    },
+    "filters": {
+      "title": null,
+      "button": null,
+      "button_count_other": null,
+      "clear": null,
+      "privacy": null,
+      "no_logging_hint": null,
+      "zdr": null,
+      "zdr_hint": null,
+      "dpa": null,
+      "dpa_hint": null,
+      "can": null,
+      "structured": null,
+      "speed_quality": null,
+      "best_quality": null,
+      "max_price": null,
+      "per_image": null,
+      "per_million": null,
+      "any_price": null,
+      "show_count_other": null,
+      "none_match": null
+    },
+    "info": {
+      "open": null,
+      "maker": null,
+      "route": null,
+      "runs_in": null,
+      "training": null,
+      "yes": null,
+      "no": null,
+      "logging": null,
+      "none": null,
+      "abuse_monitoring": null,
+      "storage": null,
+      "not_stored": null,
+      "stored": null,
+      "stored_days_other": null,
+      "unknown": null,
+      "moderation": null,
+      "transfer": null,
+      "stays_in_eu": null,
+      "sccs": null,
+      "dpa": null,
+      "available": null,
+      "not_available": null,
+      "context": null,
+      "context_tokens": null,
+      "max_size": null,
+      "price": null
+    }
   }
 }

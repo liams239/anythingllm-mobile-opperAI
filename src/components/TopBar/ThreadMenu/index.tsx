@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Brain, CheckCircle, DotsThreeVertical, Export, FileCode, FileMd, FilePdf, FileText, FolderOpen, ShareNetwork } from 'phosphor-react-native';
+import { Brain, ChartBar, CheckCircle, DotsThreeVertical, Export, FileCode, FileMd, FilePdf, FileText, FolderOpen, ShareNetwork } from 'phosphor-react-native';
 import { screenDimensions } from '@/utils/constants';
 import useKeyboardHeight from '@/hooks/useKeyboardHeight';
 import MemoriesPage from './MemoriesPage';
+import UsagePage from './UsagePage';
 import { MenuRow, SheetHeader, MUTED_TEXT, ROW_ICON_BACKGROUND, SHEET_BACKGROUND, SUCCESS } from '@/components/SheetMenu';
 import { useBottomSheet, BOTTOM_SHEET_NAMES } from '@/contexts/BottomSheetContext';
 import useLlmPreference from '@/hooks/useLLMPreference';
@@ -26,7 +27,7 @@ import {
   type SavedThreadExport,
 } from '@/utils/chat/export';
 
-type MenuPage = 'menu' | 'memories' | 'export' | 'saved';
+type MenuPage = 'menu' | 'memories' | 'usage' | 'export' | 'saved';
 
 const EXPORT_ICONS: Record<ExportFormat, React.ReactNode> = {
   txt: <FileText size={22} color="#FFF" />,
@@ -150,7 +151,8 @@ export default function ThreadMenuSheet({ workspace, thread }: { workspace: Work
       <BottomSheetScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom, 16) + 8 + keyboardHeight }}>
-        {page === 'menu' && <MenuPageContent onMemories={() => setPage('memories')} onExport={() => setPage('export')} />}
+        {page === 'menu' && <MenuPageContent onMemories={() => setPage('memories')} onUsage={() => setPage('usage')} onExport={() => setPage('export')} />}
+        {page === 'usage' && <UsagePage thread={thread} onBack={() => setPage('menu')} />}
         {page === 'memories' && <MemoriesPage workspace={workspace} onBack={() => setPage('menu')} />}
         {page === 'export' && (
           <ExportPageContent exporting={exporting} onBack={() => setPage('menu')} onSelect={handleExport} />
@@ -163,7 +165,7 @@ export default function ThreadMenuSheet({ workspace, thread }: { workspace: Work
   );
 }
 
-function MenuPageContent({ onMemories, onExport }: { onMemories: () => void; onExport: () => void }) {
+function MenuPageContent({ onMemories, onUsage, onExport }: { onMemories: () => void; onUsage: () => void; onExport: () => void }) {
   const { t } = useTranslation();
   return (
     <View style={{ paddingTop: 8 }}>
@@ -172,6 +174,12 @@ function MenuPageContent({ onMemories, onExport }: { onMemories: () => void; onE
         title={t('top_bar.thread_menu.memories')}
         description={t('top_bar.thread_menu.memories_description')}
         onPress={onMemories}
+      />
+      <MenuRow
+        icon={<ChartBar size={22} color="#FFF" />}
+        title={t('top_bar.thread_menu.usage.title')}
+        description={t('top_bar.thread_menu.usage.description')}
+        onPress={onUsage}
       />
       <MenuRow icon={<Export size={22} color="#FFF" />} title={t('top_bar.thread_menu.export_thread')} onPress={onExport} />
     </View>

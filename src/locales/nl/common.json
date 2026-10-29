@@ -126,8 +126,25 @@
       "title": "Hulpprogramma",
       "anonymous_telemetry": "Anonieme telemetrie",
       "tool_auto_approvals": "Automatische toolgoedkeuringen",
+      "image_generation": "Afbeeldingen genereren",
       "clear_temp_files": "Tijdelijke bestanden wissen",
       "temp_files_cleared": "Tijdelijke bestanden gewist"
+    },
+    "image_generation": {
+      "page_title": "Afbeeldingen genereren",
+      "description": "Genereer afbeeldingen rechtstreeks in je chats met een Opper API-sleutel. Je gewone model blijft antwoorden en geeft beeldverzoeken door aan het beeldmodel wanneer je om een afbeelding vraagt.",
+      "api_key": "Opper API-sleutel",
+      "get_key": "Vraag een API-sleutel aan op platform.opper.ai",
+      "model": "Beeldmodel (optioneel)",
+      "model_hint": "Kies hieronder een model of typ de ID. Laat leeg om het standaard beeldmodel van Opper te gebruiken.",
+      "save": "Opslaan",
+      "saved": "Afbeeldingen genereren staat aan",
+      "remove": "API-sleutel verwijderen",
+      "removed": "Opper API-sleutel verwijderd",
+      "default_model": "Standaard van Opper",
+      "models_loading": "Beeldmodellen laden...",
+      "models_error": "Kon de beeldmodellen niet laden. Tik om opnieuw te proberen, of typ hierboven een model-ID.",
+      "models_none": "Geen beeldmodellen gevonden. Je kan de getypte ID nog steeds gebruiken."
     },
     "tool_auto_approvals": {
       "description": "Deze tools worden uitgevoerd zonder om je goedkeuring te vragen. Veeg er een weg of tik op de prullenbak om het de volgende keer weer gevraagd te krijgen.",
@@ -261,6 +278,11 @@
       "worked_for": "Gewerkt voor {{duration}}",
       "thought_for": "Nagedacht gedurende {{duration}}",
       "thoughts": "Gedachten"
+    },
+    "generated_image": {
+      "missing": "Afbeelding staat niet meer op dit toestel",
+      "open_label": "Gegenereerde afbeelding openen: {{prompt}}",
+      "share": "Delen"
     },
     "file_download": {
       "saved_to": "{{filename}} opgeslagen naar {{location}}",
@@ -639,6 +661,13 @@
       "description": "Schrijf een gestileerd .docx uit markdown met thema's en optioneel titelblad.",
       "status_creating": "Word-document \"{{name}}\" maken"
     },
+    "generate_image": {
+      "name": "Afbeeldingen genereren",
+      "description": "Maak afbeeldingen op basis van een beschrijving met Opper.",
+      "needs_api_key": "Voeg eerst je Opper API-sleutel toe via Instellingen > Afbeeldingen genereren",
+      "status_generating": "Afbeelding genereren",
+      "status_generated": "Afbeelding gegenereerd"
+    },
     "create_pdf_file": {
       "name": "PDF-document",
       "description": "Zet markdown of platte tekst om in een opgemaakt PDF.",
@@ -769,7 +798,10 @@
       "connect": "Verbinden",
       "connecting": "Verbinding wordt gemaakt...",
       "connect_failed": "Kon modellen niet laden vanuit {{provider}}. Controleer de details hierboven, of voer een modelnaam in om het toch te gebruiken.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": "Beeldmodel",
+      "image_model_setup": "Afbeeldingen genereren instellen",
+      "image_models_failed": "Kon de beeldmodellen van Opper niet laden."
     },
     "dev_shortcut_hint_one": "Druk {{count}} meer keer om ontwikkelaarshulpmiddelen te openen",
     "dev_shortcut_hint_other": "Druk {{count}} meer keren om ontwikkelaarshulpmiddelen te openen",
@@ -782,7 +814,23 @@
       "memories": "Herinneringen",
       "memories_description": "Zie herinneringen over jezelf of je voorkeuren",
       "export_thread": "Chatdraadje exporteren",
-      "saved_to_device": "Opgeslagen naar je apparaat"
+      "saved_to_device": "Opgeslagen naar je apparaat",
+      "usage": {
+        "title": "Verbruik",
+        "description": "Tokens en kosten van deze chat en deze maand",
+        "this_chat": "Deze chat",
+        "this_month": "Deze maand, alle chats",
+        "nothing_yet": "Nog niets bijgehouden",
+        "replies_one": "{{count}} antwoord",
+        "replies_other": "{{count}} antwoorden",
+        "tokens": "{{input}} in · {{output}} out tokens",
+        "cached": "{{cached}} uit cache",
+        "images_one": "{{count}} afbeelding",
+        "images_other": "{{count}} afbeeldingen",
+        "note_estimate": "Kosten zijn schattingen op basis van Opper's prijslijst; voor afbeeldingen gebruiken we wat Opper aanrekende als het dat meegeeft. Toeslagen voor lange prompts zitten er niet in.",
+        "note_unpriced": "Antwoorden van modellen zonder gekende prijs tellen enkel mee voor tokens.",
+        "note_untracked": "Antwoorden van voor deze update tellen niet mee."
+      }
     },
     "memories": {
       "global": {
@@ -1443,5 +1491,74 @@
   },
   "deep_links": {
     "finish_onboarding": "Maak AnythingLLM klaar voordat je links ernaartoe opent"
+  },
+  "opper_models": {
+    "maker_via_host": "{{maker}} via {{host}}",
+    "no_training": "Geen enkel model hier traint op je data",
+    "badges": {
+      "best": "Beste",
+      "edit": "Bewerken",
+      "fast": "Snel",
+      "very_fast": "Zeer snel",
+      "no_logging": "Geen logging",
+      "zdr": "ZDR",
+      "pdf": "PDF",
+      "reasoning": "Redeneert",
+      "trains": "Traint op data",
+      "vision": "Ziet beelden"
+    },
+    "filters": {
+      "title": "Filters",
+      "button": "Filters",
+      "button_count_one": "Filters · {{count}}",
+      "button_count_other": "Filters · {{count}}",
+      "clear": "Wis alles",
+      "privacy": "Privacy",
+      "no_logging_hint": "De route houdt geen log van je prompts bij, ook niet voor misbruikcontrole",
+      "zdr": "Zero Data Retention",
+      "zdr_hint": "Geen logging en niets opgeslagen. Routes met onbekende opslag vallen weg",
+      "dpa": "Verwerkersovereenkomst (DPA)",
+      "dpa_hint": "Er is een DPA beschikbaar voor deze route",
+      "can": "Kan",
+      "structured": "Gestructureerde output",
+      "speed_quality": "Snelheid en kwaliteit",
+      "best_quality": "Beste kwaliteit",
+      "max_price": "Max. prijs {{unit}}",
+      "per_image": "per afbeelding",
+      "per_million": "per 1M inputtokens",
+      "any_price": "Alles",
+      "show_count_one": "Toon {{count}} model",
+      "show_count_other": "Toon {{count}} modellen",
+      "none_match": "Geen modellen voor deze filters"
+    },
+    "info": {
+      "open": "Details van {{name}}",
+      "maker": "Gemaakt door",
+      "route": "Route",
+      "runs_in": "Draait in",
+      "training": "Traint op je data",
+      "yes": "Ja",
+      "no": "Nee",
+      "logging": "Logging",
+      "none": "Geen",
+      "abuse_monitoring": "Voor misbruikcontrole",
+      "storage": "Opslag van inhoud",
+      "not_stored": "Niet opgeslagen",
+      "stored": "Opgeslagen",
+      "stored_days_one": "{{count}} dag bewaard",
+      "stored_days_other": "{{count}} dagen bewaard",
+      "unknown": "Onbekend",
+      "moderation": "Moderatie",
+      "transfer": "Doorgifte",
+      "stays_in_eu": "Blijft in de EU",
+      "sccs": "Standaardcontractbepalingen",
+      "dpa": "DPA",
+      "available": "Beschikbaar",
+      "not_available": "Niet beschikbaar",
+      "context": "Context",
+      "context_tokens": "{{size}} tokens",
+      "max_size": "Grootste formaat",
+      "price": "Prijs"
+    }
   }
 }

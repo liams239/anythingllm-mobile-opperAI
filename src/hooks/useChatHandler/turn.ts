@@ -182,7 +182,16 @@ export default class AssistantTurn {
                 return { changed: true, immediate: false };
             }
             case 'report_metrics': {
-                if (data) this.response.metrics = data as WorkspaceChatResponseType['metrics'];
+                if (!data) return { changed: false, immediate: false };
+                const metrics = data as WorkspaceChatResponseType['metrics'];
+                this.response.metrics = metrics;
+                // Totals cover every tool round; a turn without tools only has the plain counts
+                this.response.usage = {
+                    ...(this.response.usage ?? {}),
+                    promptTokens: metrics.total_prompt_tokens ?? metrics.prompt_tokens ?? 0,
+                    completionTokens: metrics.total_completion_tokens ?? metrics.completion_tokens ?? 0,
+                    cachedPromptTokens: metrics.total_cached_prompt_tokens ?? metrics.cached_prompt_tokens ?? 0,
+                };
                 return { changed: false, immediate: false };
             }
             case 'complete': {

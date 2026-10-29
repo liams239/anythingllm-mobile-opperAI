@@ -297,6 +297,14 @@ function useChatHandler({ workspace, thread, llmProvider, ephemeral = false }: I
         // with the prompt. The remote (delegated) API cannot take images yet, so they are never offered there.
         const newChat = WorkspaceChat.newChatItem({ workspaceThreadSlug: thread.slug, prompt, attachments }) as DynamicChatMessage;
         const turn = new AssistantTurn(newChat);
+        // Remember who answers, so the usage page can price this reply later
+        turn.response.usage = {
+            provider: llmProvider.name,
+            model: llmProvider.model ?? undefined,
+            opper: !!(llmProvider as { usesOpper?: boolean }).usesOpper,
+            promptTokens: 0,
+            completionTokens: 0,
+        };
 
         // One abort controller per turn - the stop button fires it.
         const abortController = new AbortController();

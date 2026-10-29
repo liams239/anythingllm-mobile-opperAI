@@ -126,8 +126,25 @@
       "title": "Yardımcı Program",
       "anonymous_telemetry": "Anonim Telemetri",
       "tool_auto_approvals": "Araç otomatik onayları",
+      "image_generation": null,
       "clear_temp_files": "Geçici dosyaları temizle",
       "temp_files_cleared": "Geçici dosyalar temizlendi"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Bu araçlar onayınızı istemeden çalışır. Bir dahaki sefere yeniden sorulması için birini kaydırarak kaldırın veya çöp kutusu düğmesine dokunun.",
@@ -261,6 +278,11 @@
       "worked_for": "{{duration}} çalıştı",
       "thought_for": "{{duration}} düşündü",
       "thoughts": "Düşünceler"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}} dosyası {{location}} konumuna kaydedildi",
@@ -639,6 +661,13 @@
       "description": "Temalar ve isteğe bağlı bir başlık sayfası ile markdown'dan stillendirilmiş bir .docx yazın.",
       "status_creating": "\"{{name}}\" Word belgesi oluşturuluyor"
     },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
+    },
     "create_pdf_file": {
       "name": "PDF Belgesi",
       "description": "Markdown veya düz metni biçimlendirilmiş bir PDF'ye dönüştürün.",
@@ -769,7 +798,10 @@
       "connect": "Bağlan",
       "connecting": "Bağlanılıyor...",
       "connect_failed": "{{provider}} adresinden modeller yüklenemedi. Yukarıdaki bilgileri kontrol edin veya yine de kullanmak için bir model adı girin.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_one": "Geliştirici araçlarını açmak için {{count}} kez daha basın",
     "dev_shortcut_hint_other": "Geliştirici araçlarını açmak için {{count}} kez daha basın",
@@ -782,7 +814,23 @@
       "memories": "Anılar",
       "memories_description": "Sizin veya tercihleriniz hakkında anıları görün",
       "export_thread": "Sohbet İş Parçacığını Dışa Aktar",
-      "saved_to_device": "Cihazınıza kaydedildi"
+      "saved_to_device": "Cihazınıza kaydedildi",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
@@ -1443,5 +1491,74 @@
   },
   "deep_links": {
     "finish_onboarding": "AnythingLLM'u kurmayı tamamlamadan bağlantıları açmayın."
+  },
+  "opper_models": {
+    "maker_via_host": null,
+    "no_training": null,
+    "badges": {
+      "best": null,
+      "edit": null,
+      "fast": null,
+      "very_fast": null,
+      "no_logging": null,
+      "zdr": null,
+      "pdf": null,
+      "reasoning": null,
+      "trains": null,
+      "vision": null
+    },
+    "filters": {
+      "title": null,
+      "button": null,
+      "button_count_one": null,
+      "button_count_other": null,
+      "clear": null,
+      "privacy": null,
+      "no_logging_hint": null,
+      "zdr": null,
+      "zdr_hint": null,
+      "dpa": null,
+      "dpa_hint": null,
+      "can": null,
+      "structured": null,
+      "speed_quality": null,
+      "best_quality": null,
+      "max_price": null,
+      "per_image": null,
+      "per_million": null,
+      "any_price": null,
+      "show_count_one": null,
+      "show_count_other": null,
+      "none_match": null
+    },
+    "info": {
+      "open": null,
+      "maker": null,
+      "route": null,
+      "runs_in": null,
+      "training": null,
+      "yes": null,
+      "no": null,
+      "logging": null,
+      "none": null,
+      "abuse_monitoring": null,
+      "storage": null,
+      "not_stored": null,
+      "stored": null,
+      "stored_days_one": null,
+      "stored_days_other": null,
+      "unknown": null,
+      "moderation": null,
+      "transfer": null,
+      "stays_in_eu": null,
+      "sccs": null,
+      "dpa": null,
+      "available": null,
+      "not_available": null,
+      "context": null,
+      "context_tokens": null,
+      "max_size": null,
+      "price": null
+    }
   }
 }
