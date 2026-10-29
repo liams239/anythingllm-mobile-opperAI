@@ -128,7 +128,8 @@
       "tool_auto_approvals": "Tool auto-approvals",
       "image_generation": "Image generation",
       "clear_temp_files": "Clear temporary files",
-      "temp_files_cleared": "Temporary files cleared"
+      "temp_files_cleared": "Temporary files cleared",
+      "mcp_servers": "MCP servers"
     },
     "image_generation": {
       "page_title": "Image generation",
@@ -1560,5 +1561,48 @@
       "max_size": "Largest size",
       "price": "Price"
     }
+  },
+  "mcp": {
+    "page_title": "MCP servers",
+    "description": "Connect remote MCP servers, like Homey, to use their tools in any chat. Your chat model decides when to use them, and tools that can change something ask you first.",
+    "remote_only": "Only remote servers with a URL work on a phone. Servers that run as a program on your computer (npx, uvx) need to be hosted somewhere first.",
+    "add_button": "Add MCP server",
+    "add_title": "Add MCP server",
+    "url": "Server URL",
+    "name": "Name",
+    "auth": "Sign in",
+    "auth_oauth": "Sign in (OAuth)",
+    "auth_header": "API key",
+    "auth_none": "None",
+    "auth_oauth_hint": "You sign in with your account in the browser. Most remote servers, Homey included, work this way.",
+    "auth_header_hint": "Sent with every request, eg Authorization: Bearer your-key.",
+    "auth_none_hint": "For servers that need no sign in.",
+    "header_name": "Header name",
+    "header_value": "Header value",
+    "add_save": "Add",
+    "status_tools_one": "{{count}} tool",
+    "status_tools_other": "{{count}} tools",
+    "status_sign_in": "Sign in needed",
+    "status_error": "Not reachable",
+    "status_off": "Off",
+    "use_in_chats": "Use in chats",
+    "sign_in": "Sign in to {{name}}",
+    "sign_in_hint": "Opens a browser to sign in and allow access. You come back here when done.",
+    "signed_in": "Connected to {{name}}",
+    "sign_out": "Sign out",
+    "refresh_tools": "Refresh tools",
+    "tools_title_one": "{{count}} tool",
+    "tools_title_other": "{{count}} tools",
+    "asks_first": "Asks before running",
+    "read_only": "Read only, runs right away",
+    "remove": "Remove server",
+    "remove_confirm": "Remove",
+    "cancel": "Cancel",
+    "error_cancelled": "Sign in was cancelled",
+    "error_denied": "Access was not allowed",
+    "error_sign_in": "Could not sign in: {{message}}",
+    "error_connect": "Could not connect: {{message}}",
+    "approval_description": "Run \"{{tool}}\" on {{server}}",
+    "status_calling": "Using {{tool}} on {{server}}"
   }
 }

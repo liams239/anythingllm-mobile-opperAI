@@ -9,6 +9,7 @@ import {
   FileText,
   FileLock,
   ImageSquare,
+  Plugs,
   ChartBar,
   GithubLogo,
   Scroll,
@@ -328,6 +329,11 @@ export function MainView({ goToPage }: MainViewProps) {
                 title={t('settings.utility.image_generation')}
                 icon={<ImageSquare size={18} color="#FFF" />}
                 onPress={() => goToPage('image_generation')}
+              />
+              <SupportItem
+                title={t('settings.utility.mcp_servers')}
+                icon={<Plugs size={18} color="#FFF" />}
+                onPress={() => goToPage('mcp_servers')}
               />
               <SupportItem
                 title={t('settings.utility.tool_auto_approvals')}

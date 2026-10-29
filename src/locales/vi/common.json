@@ -128,7 +128,8 @@
       "tool_auto_approvals": "Tự động phê duyệt công cụ",
       "image_generation": null,
       "clear_temp_files": "Xóa tệp tạm thời",
-      "temp_files_cleared": "Đã xóa tệp tạm thời"
+      "temp_files_cleared": "Đã xóa tệp tạm thời",
+      "mcp_servers": null
     },
     "image_generation": {
       "page_title": null,
@@ -1509,5 +1510,46 @@
       "max_size": null,
       "price": null
     }
+  },
+  "mcp": {
+    "page_title": null,
+    "description": null,
+    "remote_only": null,
+    "add_button": null,
+    "add_title": null,
+    "url": null,
+    "name": null,
+    "auth": null,
+    "auth_oauth": null,
+    "auth_header": null,
+    "auth_none": null,
+    "auth_oauth_hint": null,
+    "auth_header_hint": null,
+    "auth_none_hint": null,
+    "header_name": null,
+    "header_value": null,
+    "add_save": null,
+    "status_tools_other": null,
+    "status_sign_in": null,
+    "status_error": null,
+    "status_off": null,
+    "use_in_chats": null,
+    "sign_in": null,
+    "sign_in_hint": null,
+    "signed_in": null,
+    "sign_out": null,
+    "refresh_tools": null,
+    "tools_title_other": null,
+    "asks_first": null,
+    "read_only": null,
+    "remove": null,
+    "remove_confirm": null,
+    "cancel": null,
+    "error_cancelled": null,
+    "error_denied": null,
+    "error_sign_in": null,
+    "error_connect": null,
+    "approval_description": null,
+    "status_calling": null
   }
 }

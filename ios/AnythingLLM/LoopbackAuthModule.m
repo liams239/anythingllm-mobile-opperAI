@@ -57,6 +57,31 @@ RCT_EXPORT_METHOD(authorize:(NSString *)url
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+  [self startAuthorize:url callbackPath:callbackPath port:0 timeoutMs:timeoutMs resolve:resolve reject:reject];
+}
+
+/**
+ * Same as `authorize`, but listens on a fixed port - for OAuth clients that register their exact
+ * redirect URI up front (eg: MCP servers with dynamic client registration). Rejects with
+ * `listen_failed` when the port is taken.
+ */
+RCT_EXPORT_METHOD(authorizeOnPort:(NSString *)url
+                  callbackPath:(NSString *)callbackPath
+                  port:(double)port
+                  timeoutMs:(double)timeoutMs
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  [self startAuthorize:url callbackPath:callbackPath port:(int)port timeoutMs:timeoutMs resolve:resolve reject:reject];
+}
+
+- (void)startAuthorize:(NSString *)url
+          callbackPath:(NSString *)callbackPath
+                  port:(int)fixedPort
+             timeoutMs:(double)timeoutMs
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject
+{
   dispatch_async(dispatch_get_main_queue(), ^{
     [self finishWithURL:nil code:@"cancelled" message:@"Superseded by a new sign in."];
 
@@ -72,7 +97,7 @@ RCT_EXPORT_METHOD(authorize:(NSString *)url
     memset(&addr, 0, sizeof(addr));
     addr.sin_len = sizeof(addr);
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(0);
+    addr.sin_port = htons(fixedPort);
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) != 0 || listen(fd, 4) != 0) {
       close(fd);

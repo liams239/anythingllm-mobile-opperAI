@@ -10,6 +10,7 @@ import AnonymousTelemetry from './AnonymousTelemetry';
 import LanguageSettings from './Language';
 import ToolAutoApprovals from './ToolAutoApprovals';
 import ImageGeneration from './ImageGeneration';
+import McpServers from './McpServers';
 
 const PAGES = {
   main: (props: any) => <MainView {...props} />,
@@ -22,6 +23,7 @@ const PAGES = {
   language: (props: any) => <LanguageSettings {...props} />,
   tool_auto_approvals: (props: any) => <ToolAutoApprovals {...props} />,
   image_generation: (props: any) => <ImageGeneration {...props} />,
+  mcp_servers: (props: any) => <McpServers {...props} />,
 };
 export type IWorkspacePageKey = keyof typeof PAGES;
 

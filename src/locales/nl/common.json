@@ -128,7 +128,8 @@
       "tool_auto_approvals": "Automatische toolgoedkeuringen",
       "image_generation": "Afbeeldingen genereren",
       "clear_temp_files": "Tijdelijke bestanden wissen",
-      "temp_files_cleared": "Tijdelijke bestanden gewist"
+      "temp_files_cleared": "Tijdelijke bestanden gewist",
+      "mcp_servers": "MCP-servers"
     },
     "image_generation": {
       "page_title": "Afbeeldingen genereren",
@@ -1560,5 +1561,48 @@
       "max_size": "Grootste formaat",
       "price": "Prijs"
     }
+  },
+  "mcp": {
+    "page_title": "MCP-servers",
+    "description": "Verbind remote MCP-servers, zoals Homey, om hun tools in elke chat te gebruiken. Je chatmodel beslist wanneer, en tools die iets kunnen wijzigen vragen eerst je akkoord.",
+    "remote_only": "Op een telefoon werken enkel remote servers met een URL. Servers die als programma op je computer draaien (npx, uvx) moeten eerst ergens gehost worden.",
+    "add_button": "MCP-server toevoegen",
+    "add_title": "MCP-server toevoegen",
+    "url": "Server-URL",
+    "name": "Naam",
+    "auth": "Aanmelden",
+    "auth_oauth": "Aanmelden (OAuth)",
+    "auth_header": "API-sleutel",
+    "auth_none": "Geen",
+    "auth_oauth_hint": "Je meldt je aan met je account in de browser. De meeste remote servers werken zo, ook Homey.",
+    "auth_header_hint": "Wordt met elke aanvraag meegestuurd, bv. Authorization: Bearer je-sleutel.",
+    "auth_none_hint": "Voor servers die geen aanmelding nodig hebben.",
+    "header_name": "Naam van de header",
+    "header_value": "Waarde van de header",
+    "add_save": "Toevoegen",
+    "status_tools_one": "{{count}} tool",
+    "status_tools_other": "{{count}} tools",
+    "status_sign_in": "Aanmelden nodig",
+    "status_error": "Niet bereikbaar",
+    "status_off": "Uit",
+    "use_in_chats": "Gebruiken in chats",
+    "sign_in": "Aanmelden bij {{name}}",
+    "sign_in_hint": "Opent een browser om je aan te melden en toegang te geven. Daarna kom je hier terug.",
+    "signed_in": "Verbonden met {{name}}",
+    "sign_out": "Afmelden",
+    "refresh_tools": "Tools vernieuwen",
+    "tools_title_one": "{{count}} tool",
+    "tools_title_other": "{{count}} tools",
+    "asks_first": "Vraagt eerst je akkoord",
+    "read_only": "Alleen lezen, draait meteen",
+    "remove": "Server verwijderen",
+    "remove_confirm": "Verwijderen",
+    "cancel": "Annuleren",
+    "error_cancelled": "Aanmelden geannuleerd",
+    "error_denied": "Toegang werd niet gegeven",
+    "error_sign_in": "Aanmelden mislukt: {{message}}",
+    "error_connect": "Verbinden mislukt: {{message}}",
+    "approval_description": "\"{{tool}}\" uitvoeren op {{server}}",
+    "status_calling": "{{tool}} gebruiken op {{server}}"
   }
 }

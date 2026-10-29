@@ -47,6 +47,12 @@ This is a fork of [Mintplex-Labs/anythingllm-mobile](https://github.com/Mintplex
 - An info sheet per model with its route, where it runs, logging, storage and retention, moderation, data transfer and DPA.
 - Works for the image model list and for the chat models of an OpenAI-compatible connection pointed at Opper. ZDR is only shown when Opper reports that nothing is stored.
 
+**MCP servers**
+- Connect remote MCP servers in **Settings > MCP servers** (eg Homey at `https://mcp.athom.com`) and use their tools in any chat, next to the built-in ones.
+- Sign in with OAuth in the browser (discovery, dynamic client registration and PKCE, as the MCP spec describes), or use an API key header. Secrets and tokens stay in the phone's keychain and tokens refresh on their own.
+- Switch servers and single tools on or off. Tools that are not marked read-only ask for your approval before they run.
+- Remote servers only (Streamable HTTP). Servers that run as a local program (`npx`, `uvx`) need to be hosted first.
+
 **Usage and cost**
 - **Usage** in the thread menu (the three dots, top right) shows the tokens and estimated cost of this chat and of all chats this month, plus generated images with what Opper billed for them. It stays out of the chat itself.
 - Token counts cover every round of a reply, including tool calls. For a connection to Opper the app now asks the server for real usage (including cached tokens) instead of estimating it.

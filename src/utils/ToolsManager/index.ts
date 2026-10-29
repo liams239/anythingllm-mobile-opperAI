@@ -200,6 +200,14 @@ class ToolsManager {
 
             if (userSettings[tool.id]) enabledTools.push(tool);
         }
+        // Tools from the user's MCP servers (Settings > MCP servers). Loaded lazily to avoid an import cycle.
+        try {
+            // @ts-ignore - dynamic import
+            const { mcpChatTools } = await import('@/utils/mcp/tools');
+            enabledTools.push(...(await mcpChatTools()));
+        } catch (error) {
+            this.log('ToolsManager::getTools: Could not load MCP tools', error);
+        }
         return enabledTools;
     }
 
@@ -214,7 +222,9 @@ class ToolsManager {
 
     /** The translated name of the tool behind a function name (eg: an approval request's `skillName`) - falls back to the function name */
     displayNameFor(functionName: string): string {
-        return this.configurableTools.find(tool => tool.definition.function.name === functionName)?.name ?? functionName;
+        return this.configurableTools.find(tool => tool.definition.function.name === functionName)?.name
+            ?? this._tools?.find(tool => tool.definition.function.name === functionName)?.name
+            ?? functionName;
     }
 
     /** Tools a scheduled job may be given - everything not flagged `hiddenFromScheduledJobs` */

@@ -58,6 +58,20 @@ class LoopbackAuthModule(private val reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun authorize(url: String, callbackPath: String, timeoutMs: Double, promise: Promise) {
+        start(url, callbackPath, 0, timeoutMs, promise)
+    }
+
+    /**
+     * Same as `authorize`, but listens on a fixed port. For OAuth clients that register their exact
+     * redirect URI up front (eg: MCP servers with dynamic client registration), where the port cannot
+     * change between registration and sign-in. Rejects with `listen_failed` when the port is taken.
+     */
+    @ReactMethod
+    fun authorizeOnPort(url: String, callbackPath: String, port: Double, timeoutMs: Double, promise: Promise) {
+        start(url, callbackPath, port.toInt(), timeoutMs, promise)
+    }
+
+    private fun start(url: String, callbackPath: String, fixedPort: Int, timeoutMs: Double, promise: Promise) {
         session?.let { finish(it, null, "cancelled", "Superseded by a new sign in.") }
 
         val activity = reactContext.currentActivity
@@ -67,7 +81,10 @@ class LoopbackAuthModule(private val reactContext: ReactApplicationContext) :
         }
 
         val server = try {
-            ServerSocket(0, 4, InetAddress.getByName("127.0.0.1"))
+            ServerSocket().apply {
+                reuseAddress = true
+                bind(java.net.InetSocketAddress(InetAddress.getByName("127.0.0.1"), fixedPort), 4)
+            }
         } catch (e: IOException) {
             promise.reject("listen_failed", "Could not start the sign in listener.", e)
             return
