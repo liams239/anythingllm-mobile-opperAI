@@ -88,3 +88,22 @@ test('reuses a listing for a while instead of fetching it again', async () => {
     await listOpperImageModels('k');
     expect(fetchMock.mock.calls.length).toBe(calls);
 });
+
+test('a model in both listings keeps the details of either, so "Edit" shows', async () => {
+    serve({
+        // The dedicated listing: name and price only
+        [IMAGES_URL]: () => json({ models: [{ id: 'xai/grok-imagine-image-2.0', name: 'Grok Imagine Image 2.0', pricing: { billing_unit: 'per_image', price_per_image: 0.04 } }] }),
+        [MODELS_URL]: () => json({ models: [{
+            id: 'xai/grok-imagine-image-2.0', capabilities: ['image_generation', 'image_edit'], speed: 'medium', quality: 'best', region: 'US',
+            maker: { display_name: 'xAI' }, compliance: { training: 'no', logging: 'abuse_monitoring' },
+        }] }),
+    });
+
+    const [grok] = await listOpperImageModels();
+
+    expect(grok.name).toBe('Grok Imagine Image 2.0');
+    expect(grok.price).toEqual({ perImage: 0.04 });
+    expect(grok.meta?.capabilities).toContain('image_edit');
+    expect(grok.meta).toMatchObject({ quality: 'best', region: 'US', maker: 'xAI' });
+    expect(grok.meta?.privacy.training).toBe('no');
+});

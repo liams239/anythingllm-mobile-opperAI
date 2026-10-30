@@ -53,12 +53,12 @@ type ChatLike = { response?: { attachments?: any[]; actions?: Array<{ type?: str
  * the photos of this prompt, or else of the latest message that had photos - people often send a
  * photo first and ask for the edit in a follow-up - and the latest generated image.
  */
-export function pickTurnImages(history: ChatLike[], current: Array<{ contentString: string; mime?: string }> = []): {
+export function pickTurnImages(history: ChatLike[], promptImages: Array<{ contentString: string; mime?: string }> = []): {
     attachments: Array<{ contentString: string; mime?: string }>;
     previousImageStorageFilename: string | null;
 } {
     const isImage = (a: any) => typeof a?.contentString === 'string' && a.contentString.startsWith('data:image/');
-    let attachments = current.filter(isImage);
+    let attachments = promptImages.filter(isImage);
     if (!attachments.length) {
         for (let i = history.length - 1; i >= 0 && !attachments.length; i--) {
             attachments = (history[i]?.response?.attachments ?? []).filter(isImage);

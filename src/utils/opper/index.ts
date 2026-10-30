@@ -234,10 +234,48 @@ async function fetchOpperImageModels(apiKey?: string): Promise<OpperModel[]> {
             log(`Could not list image models from ${urls[index]}`, result.reason);
             return;
         }
-        for (const model of result.value) if (!merged.has(model.id)) merged.set(model.id, model);
+        for (const model of result.value) {
+            const known = merged.get(model.id);
+            merged.set(model.id, known ? mergeModelEntries(known, model) : model);
+        }
     });
     if (!merged.size && lastError) throw lastError;
     return [...merged.values()].sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * One model listed by both image listings: keep what either one says. The dedicated image listing
+ * can leave out details (eg: capabilities, so no model showed "Edit") that the general one has.
+ */
+export function mergeModelEntries(a: OpperModel, b: OpperModel): OpperModel {
+    const metaA = a.meta;
+    const metaB = b.meta;
+    let meta = metaA ?? metaB ?? null;
+    if (metaA && metaB) {
+        const pick = <T,>(x: T | undefined, y: T | undefined) => (x !== undefined && x !== null && x !== '' ? x : y);
+        meta = {
+            maker: pick(metaA.maker, metaB.maker),
+            host: pick(metaA.host, metaB.host),
+            region: pick(metaA.region, metaB.region),
+            capabilities: [...new Set([...metaA.capabilities, ...metaB.capabilities])],
+            speed: pick(metaA.speed, metaB.speed),
+            quality: pick(metaA.quality, metaB.quality),
+            contextWindow: pick(metaA.contextWindow, metaB.contextWindow),
+            maxImageSide: Math.max(metaA.maxImageSide ?? 0, metaB.maxImageSide ?? 0) || undefined,
+            privacy: Object.fromEntries(
+                [...new Set([...Object.keys(metaA.privacy), ...Object.keys(metaB.privacy)])]
+                    .map((key) => [key, pick((metaA.privacy as any)[key], (metaB.privacy as any)[key])]),
+            ) as OpperModelMeta['privacy'],
+        };
+    }
+    return {
+        ...a,
+        name: a.name && a.name !== a.id ? a.name : b.name,
+        provider: a.provider || b.provider,
+        price: a.price ?? b.price,
+        aliases: [...new Set([...(a.aliases ?? []), ...(b.aliases ?? [])])],
+        meta,
+    };
 }
 
 /**
