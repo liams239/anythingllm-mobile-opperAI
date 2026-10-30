@@ -1509,8 +1509,10 @@
       "context": null,
       "context_tokens": null,
       "max_size": null,
-      "price": null
-    }
+      "price": null,
+      "last_failure": null
+    },
+    "failed_other": null
   },
   "mcp": {
     "page_title": null,

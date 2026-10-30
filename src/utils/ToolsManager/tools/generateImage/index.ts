@@ -1,6 +1,6 @@
 import { type IGeneratedImageAction } from "@/database/models/WorkspaceChat";
 import { saveGeneratedDocument } from "@/utils/fs/generatedDocuments";
-import { generateOpperImage, getOpperSettings, hasOpperApiKey, imageExtension, listOpperImageModels, markProviderUnavailable, traits, unconfiguredProvider } from "@/utils/opper";
+import { generateOpperImage, getOpperSettings, hasOpperApiKey, imageExtension, clearProviderFailure, listOpperImageModels, recordProviderFailure, routeProvider, traits, unconfiguredProvider } from "@/utils/opper";
 import { setPreviousImagePath, sourceImage } from "@/utils/opper/imageSources";
 import { parseToolArgs, type StreamEmitter } from "../createFiles/shared";
 import { type ToolExecutionContext } from "@/utils/ToolsManager";
@@ -103,14 +103,17 @@ export default {
             try {
                 image = await generateOpperImage({ ...request, settings, signal: context?.signal });
             } catch (error) {
-                // The picked route's provider is not set up on this Opper account: remember that (its
-                // routes leave the list) and make the image with Opper's default model right away
+                // The picked route's provider is not set up on this Opper account: note it (its routes
+                // get marked in the list) and make the image with Opper's default model right away
                 const provider = error instanceof Error && settings.model ? unconfiguredProvider(error.message) : null;
                 if (!provider) throw error;
-                await markProviderUnavailable(provider).catch(() => null);
+                await recordProviderFailure(provider, (error as Error).message).catch(() => null);
                 image = await generateOpperImage({ ...request, settings: { ...settings, model: '' }, signal: context?.signal });
                 fallbackNote = ` Note: the selected image model (${settings.model}) is not available on the user's Opper account, so Opper's default model was used. Mention this briefly and suggest picking another model in the model chip.`;
             }
+
+            // It worked with the picked route - an earlier failure of its provider was temporary
+            if (!fallbackNote && settings.model) await clearProviderFailure(routeProvider(settings.model)).catch(() => null);
 
             const extension = imageExtension(image.mimeType);
             const saved = await saveGeneratedDocument({

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Check, Info } from 'phosphor-react-native';
+import { Check, Info, Warning } from 'phosphor-react-native';
 import { useTranslation } from 'react-i18next';
 import { formatOpperPrice, type OpperModel, type OpperModelKind } from '@/utils/opper';
 import { ModelBadges } from './Badges';
@@ -44,6 +44,14 @@ export default function OpperModelRow({ id, name, model, kind, selected, disable
                 {!!subtitle && <Text className="text-[#9F9FA0] text-xs" numberOfLines={1} ellipsizeMode="middle">{subtitle}</Text>}
                 {!!price && <Text className="text-[#7cd4fd] text-xs" numberOfLines={1}>{price}</Text>}
                 <ModelBadges meta={meta} kind={kind} />
+                {!!model?.failure && (
+                    <View className="flex flex-row items-center" style={{ gap: 5, marginTop: 6 }}>
+                        <Warning size={13} color="#fcd34d" weight="bold" />
+                        <Text style={{ color: '#fcd34d', fontSize: 12 }} numberOfLines={1}>
+                            {t('opper_models.failed', { count: model.failure.count, date: new Date(model.failure.lastAt).toLocaleDateString() })}
+                        </Text>
+                    </View>
+                )}
             </View>
             <View className="items-center" style={{ gap: 10 }}>
                 {selected && <Check size={20} color="#7cd4fd" weight="bold" />}

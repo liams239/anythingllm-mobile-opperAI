@@ -80,6 +80,13 @@ export default function OpperModelInfo({ model, kind, onBack }: { model: OpperMo
                     <Fact label={t('opper_models.info.dpa')} value={yesNo(privacy.dpa)} tone={privacy.dpa ? 'ok' : undefined} />
                     <Fact label={kind === 'image' ? t('opper_models.info.max_size') : t('opper_models.info.context')} value={size} />
                     <Fact label={t('opper_models.info.price')} value={formatOpperPrice(model.price)} />
+                    {!!model.failure && (
+                        <Fact
+                            label={t('opper_models.info.last_failure')}
+                            value={`${t('opper_models.failed', { count: model.failure.count, date: new Date(model.failure.lastAt).toLocaleDateString() })}\n${model.failure.message}`}
+                            tone="unknown"
+                        />
+                    )}
                 </View>
             </BottomSheetScrollView>
         </View>

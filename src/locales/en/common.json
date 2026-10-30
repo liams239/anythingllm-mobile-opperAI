@@ -1560,8 +1560,11 @@
       "context": "Context",
       "context_tokens": "{{size}} tokens",
       "max_size": "Largest size",
-      "price": "Price"
-    }
+      "price": "Price",
+      "last_failure": "Last problem"
+    },
+    "failed_one": "Failed {{count}}× on your account · last {{date}}",
+    "failed_other": "Failed {{count}}× on your account · last {{date}}"
   },
   "mcp": {
     "page_title": "MCP servers",

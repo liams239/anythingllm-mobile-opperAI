@@ -1560,8 +1560,11 @@
       "context": "Context",
       "context_tokens": "{{size}} tokens",
       "max_size": "Grootste formaat",
-      "price": "Prijs"
-    }
+      "price": "Prijs",
+      "last_failure": "Laatste probleem"
+    },
+    "failed_one": "{{count}}× gefaald op je account · laatst {{date}}",
+    "failed_other": "{{count}}× gefaald op je account · laatst {{date}}"
   },
   "mcp": {
     "page_title": "MCP-servers",

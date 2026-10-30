@@ -27,7 +27,7 @@ export type StorageKeys =
   'chatgpt_plan_notice_seen' |
   'opper_model_filters' |
   'mcp_servers' |
-  'opper_unavailable_providers';
+  'opper_provider_failures';
 
 export const GLOBAL_EVENTS = {
   REDIRECT: 'REDIRECT',
@@ -81,7 +81,7 @@ export class UIStore {
     'chatgpt_plan_notice_seen',
     'opper_model_filters',
     'mcp_servers',
-    'opper_unavailable_providers',
+    'opper_provider_failures',
   ] as const;
 
   pageStates = {

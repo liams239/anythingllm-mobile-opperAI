@@ -12,7 +12,7 @@ jest.mock('@/store/UIStore', () => ({
     },
 }));
 
-import { clearOpperModelCache, listOpperImageModels, markProviderUnavailable, routeProvider, unconfiguredProvider } from '../index';
+import { clearOpperModelCache, clearProviderFailure, listOpperImageModels, recordProviderFailure, routeProvider, unconfiguredProvider } from '../index';
 
 const fetchMock = jest.fn();
 global.fetch = fetchMock as any;
@@ -132,7 +132,7 @@ test('leaves out routes that need the user\'s own provider account', async () =>
     expect(models.map((m) => m.id)).toEqual(['openai/gpt-image-1']);
 });
 
-test('routes of a provider the account cannot use are left out', async () => {
+test('routes of a provider that failed are marked and listed last, until it works again', async () => {
     expect(routeProvider('azure:global/gpt-image-2')).toBe('azure');
     expect(routeProvider('deepinfra/ByteDance/Seedream-4')).toBe('deepinfra');
     expect(unconfiguredProvider('model x is not available: provider deepinfra is not configured')).toBe('deepinfra');
@@ -140,9 +140,16 @@ test('routes of a provider the account cannot use are left out', async () => {
 
     serve({
         [IMAGES_URL]: () => json([]),
-        [MODELS_URL]: () => json({ models: [{ id: 'deepinfra/ByteDance/Seedream-4', pooled: true }, { id: 'bytedance:ap/seedream-4', pooled: true }] }),
+        [MODELS_URL]: () => json({ models: [{ id: 'a/first', pooled: true }, { id: 'deepinfra/ByteDance/Seedream-4', pooled: true }, { id: 'bytedance:ap/seedream-4', pooled: true }] }),
     });
-    await markProviderUnavailable('deepinfra');
+    await recordProviderFailure('deepinfra', 'provider deepinfra is not configured');
+    await recordProviderFailure('deepinfra', 'provider deepinfra is not configured');
 
-    expect((await listOpperImageModels()).map((m) => m.id)).toEqual(['bytedance:ap/seedream-4']);
+    const models = await listOpperImageModels();
+    expect(models.map((m) => m.id)).toEqual(['a/first', 'bytedance:ap/seedream-4', 'deepinfra/ByteDance/Seedream-4']);
+    expect(models[2].failure).toMatchObject({ count: 2, message: 'provider deepinfra is not configured' });
+    expect(models[0].failure).toBeUndefined();
+
+    await clearProviderFailure('deepinfra');
+    expect((await listOpperImageModels()).find((m) => m.id.startsWith('deepinfra'))?.failure).toBeUndefined();
 });

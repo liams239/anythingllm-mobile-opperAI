@@ -70,8 +70,8 @@ export async function saveOpperSettings(settings: OpperSettings): Promise<void> 
         service: KEYCHAIN_SERVICE,
         accessible: Keychain.ACCESSIBLE.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
     });
-    // A (re)saved key may come with providers connected since - give blocked routes another chance
-    if (cached?.apiKey !== next.apiKey) await uiStore.setToStorage('opper_unavailable_providers', []).catch(() => null);
+    // Another key may have other providers connected - earlier failures no longer say anything
+    if (cached?.apiKey !== next.apiKey) await uiStore.setToStorage('opper_provider_failures', {}).catch(() => null);
     cached = next;
 }
 
@@ -85,18 +85,38 @@ export function unconfiguredProvider(message: string): string | null {
     return /provider\s+([\w.-]+)\s+is not configured/i.exec(message)?.[1]?.toLowerCase() ?? null;
 }
 
+export type ProviderFailure = {
+    count: number;
+    /** Epoch millis of the last failure */
+    lastAt: number;
+    message: string;
+};
+
 /**
- * Providers this Opper account cannot use, learned from errors - Opper's listings show every route,
- * not which providers an account has. Their routes are left out of the model lists.
+ * Providers that failed for this Opper account ("provider deepinfra is not configured"), learned
+ * from errors - Opper's listings show every route, not which providers an account can use. Their
+ * routes stay pickable (it may be temporary) but are marked and listed last; a later success clears it.
  */
-export async function unavailableProviders(): Promise<string[]> {
-    const stored = await uiStore.getFromStorage('opper_unavailable_providers', [] as string[]).catch(() => []);
-    return Array.isArray(stored) ? stored : [];
+export async function providerFailures(): Promise<Record<string, ProviderFailure>> {
+    const stored: unknown = await uiStore.getFromStorage('opper_provider_failures', {}).catch(() => ({}));
+    return stored && typeof stored === 'object' && !Array.isArray(stored) ? (stored as Record<string, ProviderFailure>) : {};
 }
 
-export async function markProviderUnavailable(provider: string): Promise<void> {
-    const known = await unavailableProviders();
-    if (!known.includes(provider)) await uiStore.setToStorage('opper_unavailable_providers', [...known, provider]);
+export async function recordProviderFailure(provider: string, message: string): Promise<void> {
+    const failures = await providerFailures();
+    const previous = failures[provider];
+    await uiStore.setToStorage('opper_provider_failures', {
+        ...failures,
+        [provider]: { count: (previous?.count ?? 0) + 1, lastAt: Date.now(), message: message.slice(0, 300) },
+    });
+}
+
+export async function clearProviderFailure(provider: string): Promise<void> {
+    const failures = await providerFailures();
+    if (!failures[provider]) return;
+    const rest = { ...failures };
+    delete rest[provider];
+    await uiStore.setToStorage('opper_provider_failures', rest);
 }
 
 export async function clearOpperSettings(): Promise<void> {
@@ -195,6 +215,8 @@ export type OpperModel = {
     aliases?: string[];
     /** Capabilities and privacy - null for bare ids without a listing entry */
     meta?: OpperModelMeta | null;
+    /** Failures of this route's provider on the user's account, when there were any */
+    failure?: ProviderFailure;
     /**
      * `pooled` from the listing: true when Opper serves the route with its own provider accounts.
      * False means it only works after the user connects that provider (eg: Azure) in Opper.
@@ -358,11 +380,17 @@ export function clearOpperModelCache() {
  * could be read.
  */
 export async function listOpperImageModels(apiKey?: string): Promise<OpperModel[]> {
-    const [models, blocked] = await Promise.all([
+    const [models, failures] = await Promise.all([
         cachedListing(`image:${apiKey?.trim() ?? ''}`, () => fetchOpperImageModels(apiKey)),
-        unavailableProviders(),
+        providerFailures(),
     ]);
-    return blocked.length ? models.filter((model) => !blocked.includes(routeProvider(model.id))) : models;
+    if (!Object.keys(failures).length) return models;
+    // Routes whose provider failed are marked and listed last (stable, so the rest keeps its order)
+    const marked = models.map((model) => {
+        const failure = failures[routeProvider(model.id)];
+        return failure ? { ...model, failure } : model;
+    });
+    return [...marked.filter((model) => !model.failure), ...marked.filter((model) => model.failure)];
 }
 
 export function listOpperChatModels(apiKey?: string): Promise<Map<string, OpperModel>> {

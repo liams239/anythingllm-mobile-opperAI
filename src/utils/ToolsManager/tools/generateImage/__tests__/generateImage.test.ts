@@ -172,7 +172,7 @@ describe('picking the photos to edit', () => {
     });
 });
 
-test('a route whose provider is not set up falls back to the default model and is hidden from then on', async () => {
+test('a route whose provider is not set up falls back to the default model and is marked', async () => {
     await saveOpperSettings({ apiKey: 'op-key', model: 'deepinfra/ByteDance/Seedream-4' });
     let calls = 0;
     fetchMock.mockImplementation(async (_url: string, init: any) => {
@@ -188,6 +188,17 @@ test('a route whose provider is not set up falls back to the default model and i
     expect(JSON.parse(fetchMock.mock.calls[1][1].body).model).toBeUndefined();
     expect(result).toMatch(/already shown to the user/);
     expect(result).toMatch(/not available on the user's Opper account/);
-    const { unavailableProviders } = require('@/utils/opper');
-    expect(await unavailableProviders()).toEqual(['deepinfra']);
+    const { providerFailures } = require('@/utils/opper');
+    expect((await providerFailures()).deepinfra).toMatchObject({ count: 1 });
+});
+
+test('a success with the picked route clears an earlier failure of its provider', async () => {
+    const { recordProviderFailure, providerFailures } = require('@/utils/opper');
+    await saveOpperSettings({ apiKey: 'op-key', model: 'deepinfra/ByteDance/Seedream-4' });
+    await recordProviderFailure('deepinfra', 'provider deepinfra is not configured');
+    fetchMock.mockResolvedValue(okResponse({ data: { image: 'aGk=', mime_type: 'image/png' } }));
+
+    await generateImage.execute({ prompt: 'a garden' }, jest.fn());
+
+    expect((await providerFailures()).deepinfra).toBeUndefined();
 });

@@ -1662,8 +1662,13 @@
       "context": null,
       "context_tokens": null,
       "max_size": null,
-      "price": null
-    }
+      "price": null,
+      "last_failure": null
+    },
+    "failed_few": null,
+    "failed_many": null,
+    "failed_one": null,
+    "failed_other": null
   },
   "mcp": {
     "page_title": null,
