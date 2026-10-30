@@ -36,7 +36,7 @@ export default {
                 'Create or edit an image and show it to the user in the chat. ' +
                 'Use this whenever the user asks to create, draw, design, visualize, change, edit or restyle an image - ' +
                 'including "show me how this would look if...". ' +
-                'To change a photo the user attached to this message set source to "attached"; to change the last image you made set source to "previous". ' +
+                'To change a photo the user sent in this chat (the most recent one, also from an earlier message) set source to "attached"; to change the last image you made set source to "previous". ' +
                 'Write the prompt in English: for a new image a detailed visual description (subject, style, composition, colors, lighting), ' +
                 'for an edit the changes to make and what must stay the same.',
             parameters: {
@@ -49,11 +49,11 @@ export default {
                     source: {
                         type: 'string',
                         enum: ['none', 'attached', 'previous'],
-                        description: 'Image to edit: "attached" (a photo the user sent with this message), "previous" (the last image generated in this chat) or "none" for a new image (default).',
+                        description: 'Image to edit: "attached" (the photos the user sent most recently in this chat), "previous" (the last image generated in this chat) or "none" for a new image (default).',
                     },
                     attached_index: {
                         type: 'number',
-                        description: 'With source "attached": which attached photo to edit, 0 for the first (default).',
+                        description: 'With source "attached": which of those photos to edit, 0 for the first (default).',
                     },
                     size: {
                         type: 'string',
@@ -80,7 +80,7 @@ export default {
                 reference = await sourceImage(source, Number(attachedIndex) || 0);
                 if (!reference) {
                     return source === 'attached'
-                        ? 'No photo is attached to this message, so there is nothing to edit. Ask the user to attach the photo, or generate a new image instead.'
+                        ? 'No photo has been sent in this chat, so there is nothing to edit. Ask the user to attach the photo, or generate a new image instead.'
                         : 'There is no earlier generated image in this chat to edit. Generate a new image instead.';
                 }
                 // A picked model that cannot edit would ignore the photo - say so instead of drawing something unrelated

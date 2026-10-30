@@ -45,3 +45,34 @@ export async function sourceImage(kind: 'attached' | 'previous', index = 0): Pro
     if (!path || !(await RNFS.exists(path).catch(() => false))) return null;
     return { base64: await RNFS.readFile(path, 'base64'), mimeType: mimeFromPath(path) };
 }
+
+type ChatLike = { response?: { attachments?: any[]; actions?: Array<{ type?: string; action?: any }> } | null };
+
+/**
+ * What the image tool may edit this turn, from the thread so far (oldest first, current chat last):
+ * the photos of this prompt, or else of the latest message that had photos - people often send a
+ * photo first and ask for the edit in a follow-up - and the latest generated image.
+ */
+export function pickTurnImages(history: ChatLike[], current: Array<{ contentString: string; mime?: string }> = []): {
+    attachments: Array<{ contentString: string; mime?: string }>;
+    previousImageStorageFilename: string | null;
+} {
+    const isImage = (a: any) => typeof a?.contentString === 'string' && a.contentString.startsWith('data:image/');
+    let attachments = current.filter(isImage);
+    if (!attachments.length) {
+        for (let i = history.length - 1; i >= 0 && !attachments.length; i--) {
+            attachments = (history[i]?.response?.attachments ?? []).filter(isImage);
+        }
+    }
+    let previousImageStorageFilename: string | null = null;
+    for (let i = history.length - 1; i >= 0 && !previousImageStorageFilename; i--) {
+        const actions = history[i]?.response?.actions ?? [];
+        for (let j = actions.length - 1; j >= 0; j--) {
+            if (actions[j]?.type === 'generated_image' && actions[j]?.action?.storageFilename) {
+                previousImageStorageFilename = actions[j].action.storageFilename;
+                break;
+            }
+        }
+    }
+    return { attachments, previousImageStorageFilename };
+}

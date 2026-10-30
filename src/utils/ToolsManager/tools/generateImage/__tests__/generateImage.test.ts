@@ -128,7 +128,7 @@ describe('editing an image', () => {
     test('says so when there is no photo to edit', async () => {
         await saveOpperSettings({ apiKey: 'op-key', model: '' });
         setTurnImages({ attachments: [], previousImagePath: null });
-        expect(await generateImage.execute({ prompt: 'x', source: 'attached' }, jest.fn())).toMatch(/No photo is attached/);
+        expect(await generateImage.execute({ prompt: 'x', source: 'attached' }, jest.fn())).toMatch(/No photo has been sent/);
         expect(await generateImage.execute({ prompt: 'x', source: 'previous' }, jest.fn())).toMatch(/no earlier generated image/);
         expect(fetchMock).not.toHaveBeenCalled();
     });
@@ -144,5 +144,23 @@ describe('editing an image', () => {
 
         expect(result).toMatch(/cannot edit images/);
         expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/functions/'))).toBe(false);
+    });
+});
+
+describe('picking the photos to edit', () => {
+    const { pickTurnImages } = require('@/utils/opper/imageSources');
+    const photo = (name: string) => ({ contentString: `data:image/jpeg;base64,${name}` });
+
+    test('uses this prompt\'s photos, else the latest earlier ones', () => {
+        const history = [
+            { response: { attachments: [photo('old')], actions: [] } },
+            { response: { attachments: [photo('garden1'), photo('garden2')], actions: [] } },
+            { response: { attachments: [], actions: [{ type: 'generated_image', action: { storageFilename: 'image-1.png' } }] } },
+            { response: { attachments: [] } },
+        ];
+        expect(pickTurnImages(history, []).attachments.map((a: any) => a.contentString)).toEqual([photo('garden1').contentString, photo('garden2').contentString]);
+        expect(pickTurnImages(history, [photo('now')]).attachments).toEqual([photo('now')]);
+        expect(pickTurnImages(history, []).previousImageStorageFilename).toBe('image-1.png');
+        expect(pickTurnImages([], [])).toEqual({ attachments: [], previousImageStorageFilename: null });
     });
 });
