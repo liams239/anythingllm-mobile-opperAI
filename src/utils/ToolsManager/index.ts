@@ -72,6 +72,12 @@ export type ToolManagerTool = {
      */
     supportsOnDevice?: boolean;
     /**
+     * Always offered to the model, even when many tools are on and the rest are narrowed down by
+     * relevance to the prompt (`rerankTools`). For cheap, explicitly enabled tools whose prompts
+     * rarely name them (eg: "make this garden flatter" for image generation).
+     */
+    alwaysOffer?: boolean;
+    /**
      * Set to true for tools that only make sense with a person in the loop (eg: creating another
      * scheduled job). They are left out of the per-job tool picker and never handed to a job run.
      */
@@ -338,13 +344,20 @@ class ToolsManager {
             return tools;
         }
 
+        // Tools flagged `alwaysOffer` skip the narrowing and do not take a slot from the others
+        const pinnedNames = new Set((this._tools ?? []).filter(tool => tool.alwaysOffer).map(tool => tool.definition.function.name));
+        const pinned = tools.filter(tool => pinnedNames.has(tool.function.name));
+        const rest = tools.filter(tool => !pinnedNames.has(tool.function.name));
+        if (rest.length <= threshold) return tools;
+
         const reranker = new ToolReranker();
-        return reranker.rerank({
+        const ranked = await reranker.rerank({
             prompt,
-            tools,
+            tools: rest,
             topN: threshold,
             onStatus,
         });
+        return [...pinned, ...ranked];
     }
 
     /**
@@ -497,6 +510,16 @@ class ToolsManager {
         } while (willLoop);
         return nextResponse;
     }
+}
+
+/** The text of a chat message for reranking - messages with images carry an array of parts */
+export function promptText(content: unknown): string {
+    if (typeof content === 'string') return content;
+    if (!Array.isArray(content)) return '';
+    return content
+        .map((part: any) => (typeof part === 'string' ? part : part?.type === 'text' ? part.text : ''))
+        .filter(Boolean)
+        .join('\n');
 }
 
 export default new ToolsManager();

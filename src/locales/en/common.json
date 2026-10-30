@@ -667,7 +667,8 @@
       "description": "Create images from a description with Opper.",
       "needs_api_key": "Add your Opper API key in Settings > Image generation first",
       "status_generating": "Generating image",
-      "status_generated": "Image generated"
+      "status_generated": "Image generated",
+      "status_editing": "Editing image"
     },
     "create_pdf_file": {
       "name": "PDF Document",

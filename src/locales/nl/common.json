@@ -667,7 +667,8 @@
       "description": "Maak afbeeldingen op basis van een beschrijving met Opper.",
       "needs_api_key": "Voeg eerst je Opper API-sleutel toe via Instellingen > Afbeeldingen genereren",
       "status_generating": "Afbeelding genereren",
-      "status_generated": "Afbeelding gegenereerd"
+      "status_generated": "Afbeelding gegenereerd",
+      "status_editing": "Afbeelding bewerken"
     },
     "create_pdf_file": {
       "name": "PDF-document",

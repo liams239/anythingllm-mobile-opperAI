@@ -8,7 +8,7 @@ import { DEFAULT_GGUF_FOLDER } from "@/utils/models/manager";
 import * as RNFS from '@dr.pogodin/react-native-fs';
 import Workspace from "@/database/models/Workspace";
 import { DynamicChatMessage } from "@/screens/WorkspaceChat/ChatHistory";
-import ToolsManager from "@/utils/ToolsManager";
+import ToolsManager, { promptText } from "@/utils/ToolsManager";
 import ImportedModels, { describeImportedModel } from "@/utils/models/imported";
 import i18n from "@/i18n";
 import { throwIfAborted } from "@/utils/chat/abort";
@@ -374,7 +374,7 @@ export default class OnDeviceProvider extends BaseOpenAILikeProvider {
 
     let availableTools = await ToolsManager.injectAvailableTools();
     const lastUserMessage = [...formattedMessages].reverse().find(m => m.role === 'user');
-    const userPrompt = typeof lastUserMessage?.content === 'string' ? lastUserMessage.content : '';
+    const userPrompt = promptText(lastUserMessage?.content);
     availableTools = await ToolsManager.rerankTools(
         availableTools, userPrompt, 'on-device',
         (status) => onStream('report_status', status),

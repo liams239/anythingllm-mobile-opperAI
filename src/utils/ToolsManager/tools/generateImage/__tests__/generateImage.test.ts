@@ -106,3 +106,43 @@ test('returns the Opper error to the model instead of throwing', async () => {
     expect(result).toBe('There was an error generating the image: Opper error 401: Invalid API key');
     expect(emitter).not.toHaveBeenCalledWith('report_action', expect.anything());
 });
+
+describe('editing an image', () => {
+    const { setTurnImages } = require('@/utils/opper/imageSources');
+    const listing = (models: any[]) => ({ ok: true, status: 200, json: async () => ({ models }), text: async () => JSON.stringify({ models }) });
+
+    test('sends the attached photo as the reference image', async () => {
+        await saveOpperSettings({ apiKey: 'op-key', model: '' });
+        setTurnImages({ attachments: [{ contentString: 'data:image/jpeg;base64,Zmlyc3Q=' }, { contentString: 'data:image/jpeg;base64,c2Vjb25k' }], previousImagePath: null });
+        fetchMock.mockResolvedValue(okResponse({ data: { image: 'aGk=', mime_type: 'image/png' } }));
+
+        const emitter = jest.fn();
+        await generateImage.execute({ prompt: 'make the lawn flat', source: 'attached', attached_index: 1 }, emitter);
+
+        const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+        expect(body.input).toEqual({ description: 'make the lawn flat', reference_image: 'c2Vjb25k' });
+        expect(body.input_schema.properties.reference_image).toBeDefined();
+        expect(emitter).toHaveBeenCalledWith('report_status', 'tools.generate_image.status_editing');
+    });
+
+    test('says so when there is no photo to edit', async () => {
+        await saveOpperSettings({ apiKey: 'op-key', model: '' });
+        setTurnImages({ attachments: [], previousImagePath: null });
+        expect(await generateImage.execute({ prompt: 'x', source: 'attached' }, jest.fn())).toMatch(/No photo is attached/);
+        expect(await generateImage.execute({ prompt: 'x', source: 'previous' }, jest.fn())).toMatch(/no earlier generated image/);
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    test('a picked model that cannot edit is reported instead of ignoring the photo', async () => {
+        await saveOpperSettings({ apiKey: 'op-key', model: 'pruna/p-image' });
+        setTurnImages({ attachments: [{ contentString: 'data:image/jpeg;base64,eA==' }], previousImagePath: null });
+        fetchMock.mockImplementation(async (url: string) => (url.includes('/models')
+            ? listing([{ id: 'pruna/p-image', name: 'Pruna P-Image', capabilities: ['image_generation'] }])
+            : okResponse({ data: { image: 'aGk=' } })));
+
+        const result = await generateImage.execute({ prompt: 'flatter', source: 'attached' }, jest.fn());
+
+        expect(result).toMatch(/cannot edit images/);
+        expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/functions/'))).toBe(false);
+    });
+});

@@ -10,7 +10,7 @@ import OpenAILite from "@/utils/openai";
 import VectorDB, { SemanticSearchResult } from "@/utils/VectorDB";
 import DocumentReranker from "@/utils/DocumentReranker";
 import { type IAgentAction } from "@/database/models/WorkspaceChat";
-import ToolsManager, { type ToolManagerTool } from "@/utils/ToolsManager";
+import ToolsManager, { promptText, type ToolManagerTool } from "@/utils/ToolsManager";
 import { isAbortError, linkAbortSignal, throwIfAborted } from "@/utils/chat/abort";
 import MemoryManager, { type PromptMemories } from "@/utils/Memories";
 import Document from "@/database/models/Document";
@@ -620,7 +620,8 @@ export default abstract class BaseOpenAILikeProvider {
     } else {
       availableTools = await ToolsManager.injectAvailableTools();
       const lastUserMessage = [...formattedMessages].reverse().find(m => m.role === 'user');
-      const userPrompt = typeof lastUserMessage?.content === 'string' ? lastUserMessage.content : '';
+      // Prompts with images carry an array of parts - rerank on their text, not an empty string
+      const userPrompt = promptText(lastUserMessage?.content);
       availableTools = await ToolsManager.rerankTools(
           availableTools, userPrompt, 'cloud',
           (status) => onStream('report_status', status),

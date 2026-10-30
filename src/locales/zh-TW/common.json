@@ -646,7 +646,8 @@
       "description": null,
       "needs_api_key": null,
       "status_generating": null,
-      "status_generated": null
+      "status_generated": null,
+      "status_editing": null
     },
     "create_pdf_file": {
       "name": "PDF 文件",

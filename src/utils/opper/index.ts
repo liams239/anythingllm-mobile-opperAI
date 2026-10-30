@@ -91,9 +91,11 @@ function errorMessage(status: number, body: string): string {
  * Generate one image. Mirrors `opper.generateImage()` from the `opperai` SDK: a call to the
  * `image-gen` function with a `{ description }` input and an `{ image, mime_type }` output.
  */
-export async function generateOpperImage({ prompt, size, settings, signal }: {
+export async function generateOpperImage({ prompt, size, referenceImage, settings, signal }: {
     prompt: string;
     size?: string;
+    /** Base64 image to edit (no data: prefix) - the prompt then describes the changes */
+    referenceImage?: string;
     settings: OpperSettings;
     signal?: AbortSignal | null;
 }): Promise<OpperImage> {
@@ -101,6 +103,10 @@ export async function generateOpperImage({ prompt, size, settings, signal }: {
         description: { type: 'string', description: 'Text description of the image to generate' },
     };
     const input: Record<string, any> = { description: prompt };
+    if (referenceImage) {
+        inputProperties.reference_image = { type: 'string', description: 'Base64-encoded reference image' };
+        input.reference_image = referenceImage;
+    }
     if (size) {
         inputProperties.size = { type: 'string', description: 'Image size' };
         input.size = size;

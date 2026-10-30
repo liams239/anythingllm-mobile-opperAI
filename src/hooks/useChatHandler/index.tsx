@@ -17,6 +17,8 @@ import PushNotifications from "@/utils/PushNotifications";
 import { claimLowMemoryWarning, type LowMemoryStatus } from "@/utils/models/lowMemory";
 import LowMemoryModal from "@/components/LowMemoryModal";
 import i18n from "@/i18n";
+import { setTurnImages } from "@/utils/opper/imageSources";
+import { generatedDocumentPath } from "@/utils/fs/generatedDocuments";
 
 type LowMemoryWarning = { status: LowMemoryStatus; resolve: (proceed: boolean) => void };
 
@@ -350,6 +352,14 @@ function useChatHandler({ workspace, thread, llmProvider, ephemeral = false }: I
             if (!ephemeral) WorkspaceThread.autoRename({ thread, prompt }).catch(err => debug('Error auto-renaming thread', err));
 
             const messageHistory = Array.from(chatsMapRef.current.values()).concat([newChat]);
+            // The image tool can edit this prompt's photos or the thread's last generated image
+            const lastGenerated = [...messageHistory].reverse()
+                .flatMap(chat => [...(chat.response?.actions ?? [])].reverse())
+                .find(action => action?.type === 'generated_image') as { action?: { storageFilename?: string } } | undefined;
+            setTurnImages({
+                attachments: attachments ?? [],
+                previousImagePath: lastGenerated?.action?.storageFilename ? generatedDocumentPath(lastGenerated.action.storageFilename) : null,
+            });
             const handleStreamEvent = (event: IStreamEvent, data: IStreamResponse) => {
                 const { changed, immediate } = turn.applyEvent(event, data);
                 if (changed) scheduleFlush(immediate);
