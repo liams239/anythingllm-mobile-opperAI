@@ -164,3 +164,11 @@ describe('picking the photos to edit', () => {
         expect(pickTurnImages([], [])).toEqual({ attachments: [], previousImageStorageFilename: null });
     });
 });
+
+test('a route this Opper account cannot use is explained, not retried', async () => {
+    await saveOpperSettings({ apiKey: 'op-key', model: 'azure:global/gpt-image-2' });
+    fetchMock.mockResolvedValue({ ok: false, status: 400, text: async () => JSON.stringify({ error: { message: 'model azure:global/gpt-image-2 is not available: provider azure is not configured' } }) });
+    const result = await generateImage.execute({ prompt: 'a cat' }, jest.fn());
+    expect(result).toMatch(/cannot be used with this Opper account/);
+    expect(result).toMatch(/do not retry/);
+});

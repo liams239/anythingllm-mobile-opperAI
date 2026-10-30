@@ -32,7 +32,7 @@ test('merges both listings, sorted and deduplicated, and sends the key', async (
     serve({
         [IMAGES_URL]: () => json({ models: [
             { id: 'openai/gpt-image-1', name: 'GPT Image 1', provider: 'openai' },
-            { id: 'pruna/p-image', name: 'P-Image', provider: 'pruna' },
+            { id: 'pruna/p-image', name: 'P-Image', provider: 'pruna', pooled: true },
         ] }),
         [MODELS_URL]: () => json({ models: [
             { id: 'xai/grok-imagine-image-2.0', name: 'Grok Imagine Image 2.0', provider: 'xai' },
@@ -106,4 +106,19 @@ test('a model in both listings keeps the details of either, so "Edit" shows', as
     expect(grok.meta?.capabilities).toContain('image_edit');
     expect(grok.meta).toMatchObject({ quality: 'best', region: 'US', maker: 'xAI' });
     expect(grok.meta?.privacy.training).toBe('no');
+});
+
+test('leaves out routes that need the user\'s own provider account', async () => {
+    serve({
+        [IMAGES_URL]: () => json({ models: [
+            { id: 'azure:global/gpt-image-2', name: 'GPT Image 2' },
+            { id: 'byok/thing', pooled: false },
+            { id: 'openai/gpt-image-1', name: 'GPT Image 1' },
+        ] }),
+        [MODELS_URL]: () => json({ models: [{ id: 'openai/gpt-image-1', pooled: true }, { id: 'other/off', pooled: false }] }),
+    });
+
+    const models = await listOpperImageModels();
+
+    expect(models.map((m) => m.id)).toEqual(['openai/gpt-image-1']);
 });

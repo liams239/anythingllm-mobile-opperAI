@@ -127,6 +127,10 @@ export default {
             return 'The image was generated and is already shown to the user under your reply. Do not add image links or markdown images; briefly describe what you made or ask if they want changes.';
         } catch (e) {
             if (context?.signal?.aborted) return 'Image generation was stopped by the user.';
+            // A route that needs the user's own provider account in Opper (eg: an Azure route)
+            if (e instanceof Error && /not available|not configured/i.test(e.message)) {
+                return `The selected image model cannot be used with this Opper account (${e.message}). Tell the user to pick another image model in the model chip, eg one marked "Edit" for editing photos, and do not retry with the same model.`;
+            }
             console.error(`Generate Image Error: ${e instanceof Error ? e.message : 'Unknown error'}`);
             return `There was an error generating the image: ${e instanceof Error ? e.message : 'Unknown error'}`;
         }

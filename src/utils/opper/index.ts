@@ -168,6 +168,11 @@ export type OpperModel = {
     aliases?: string[];
     /** Capabilities and privacy - null for bare ids without a listing entry */
     meta?: OpperModelMeta | null;
+    /**
+     * `pooled` from the listing: true when Opper serves the route with its own provider accounts.
+     * False means it only works after the user connects that provider (eg: Azure) in Opper.
+     */
+    pooled?: boolean;
 };
 /** @deprecated use OpperModel */
 export type OpperImageModel = OpperModel;
@@ -192,6 +197,7 @@ function parseModelList(body: any): OpperImageModel[] {
             aliases: (Array.isArray(entry?.aliases) ? entry.aliases : [])
                 .filter((a: unknown): a is string => typeof a === 'string' && a !== id),
             meta: typeof entry === 'object' ? parseOpperMeta(entry) : null,
+            ...(typeof entry?.pooled === 'boolean' ? { pooled: entry.pooled } : {}),
         });
     }
     return models;
@@ -240,7 +246,14 @@ async function fetchOpperImageModels(apiKey?: string): Promise<OpperModel[]> {
         }
     });
     if (!merged.size && lastError) throw lastError;
-    return [...merged.values()].sort((a, b) => a.id.localeCompare(b.id));
+    // The general listing holds the routes Opper serves itself. The dedicated one can also list
+    // routes that need the user's own provider account (eg: "azure:global/gpt-image-2" fails with
+    // "provider azure is not configured"), so keep those only when they say they are pooled.
+    // Only trusted when it answered with models - an empty or failed general listing filters nothing
+    const general = results[1].status === 'fulfilled' && results[1].value.length ? new Set(results[1].value.map((model) => model.id)) : null;
+    return [...merged.values()]
+        .filter((model) => model.pooled !== false && (!general || general.has(model.id) || model.pooled === true))
+        .sort((a, b) => a.id.localeCompare(b.id));
 }
 
 /**
@@ -275,6 +288,7 @@ export function mergeModelEntries(a: OpperModel, b: OpperModel): OpperModel {
         price: a.price ?? b.price,
         aliases: [...new Set([...(a.aliases ?? []), ...(b.aliases ?? [])])],
         meta,
+        ...(a.pooled !== undefined || b.pooled !== undefined ? { pooled: a.pooled === false || b.pooled === false ? false : true } : {}),
     };
 }
 
