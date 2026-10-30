@@ -69,6 +69,7 @@ describe('listOpperChatModels', () => {
     test('keys models by route id and alias only, never the shared model name', async () => {
         jest.resetModules();
         jest.doMock('react-native-keychain', () => ({}));
+        jest.doMock('@/store/UIStore', () => ({ __esModule: true, default: { getFromStorage: async (_key: string, fallback: any) => fallback, setToStorage: async () => undefined } }));
         const { listOpperChatModels } = require('../index');
         const route = (id: string, input: number, aliases: string[] = []) => ({
             id, aliases, model_id: 'deepseek-v4-pro', pricing: { billing_unit: 'per_mtok', input: [input], output: [input * 2] },

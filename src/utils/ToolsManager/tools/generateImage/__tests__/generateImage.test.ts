@@ -28,7 +28,14 @@ let mockUuid = 0;
 jest.mock('@/utils/constants', () => ({ generateUUID: () => `00000000-0000-4000-8000-${String(++mockUuid).padStart(12, '0')}` }));
 jest.mock('@/i18n', () => ({ __esModule: true, default: { t: (key: string) => key } }));
 jest.mock('@/utils/ToolsManager', () => ({}));
-jest.mock('@/store/UIStore', () => ({ __esModule: true, default: { getFromStorage: async (_key: string, fallback: any) => fallback, setToStorage: async () => undefined } }));
+const mockStore = new Map<string, any>();
+jest.mock('@/store/UIStore', () => ({
+    __esModule: true,
+    default: {
+        getFromStorage: async (key: string, fallback: any) => (mockStore.has(key) ? mockStore.get(key) : fallback),
+        setToStorage: async (key: string, value: any) => { mockStore.set(key, value); },
+    },
+}));
 
 import generateImage from '../index';
 import { clearOpperSettings, saveOpperSettings } from '@/utils/opper';
@@ -165,10 +172,22 @@ describe('picking the photos to edit', () => {
     });
 });
 
-test('a route this Opper account cannot use is explained, not retried', async () => {
-    await saveOpperSettings({ apiKey: 'op-key', model: 'azure:global/gpt-image-2' });
-    fetchMock.mockResolvedValue({ ok: false, status: 400, text: async () => JSON.stringify({ error: { message: 'model azure:global/gpt-image-2 is not available: provider azure is not configured' } }) });
-    const result = await generateImage.execute({ prompt: 'a cat' }, jest.fn());
-    expect(result).toMatch(/cannot be used with this Opper account/);
-    expect(result).toMatch(/do not retry/);
+test('a route whose provider is not set up falls back to the default model and is hidden from then on', async () => {
+    await saveOpperSettings({ apiKey: 'op-key', model: 'deepinfra/ByteDance/Seedream-4' });
+    let calls = 0;
+    fetchMock.mockImplementation(async (_url: string, init: any) => {
+        calls += 1;
+        const body = JSON.parse(init.body);
+        if (body.model) return { ok: false, status: 400, text: async () => JSON.stringify({ error: { message: 'model deepinfra/ByteDance/Seedream-4 is not available: provider deepinfra is not configured' } }) };
+        return okResponse({ data: { image: 'aGk=', mime_type: 'image/png' } });
+    });
+
+    const result = await generateImage.execute({ prompt: 'a garden' }, jest.fn());
+
+    expect(calls).toBe(2);
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body).model).toBeUndefined();
+    expect(result).toMatch(/already shown to the user/);
+    expect(result).toMatch(/not available on the user's Opper account/);
+    const { unavailableProviders } = require('@/utils/opper');
+    expect(await unavailableProviders()).toEqual(['deepinfra']);
 });

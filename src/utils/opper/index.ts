@@ -1,4 +1,5 @@
 import * as Keychain from 'react-native-keychain';
+import uiStore from '@/store/UIStore';
 import { parseOpperPrice, type OpperPrice } from './pricing';
 import { parseOpperMeta, type OpperModelMeta } from './metadata';
 
@@ -69,7 +70,33 @@ export async function saveOpperSettings(settings: OpperSettings): Promise<void> 
         service: KEYCHAIN_SERVICE,
         accessible: Keychain.ACCESSIBLE.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
     });
+    // A (re)saved key may come with providers connected since - give blocked routes another chance
+    if (cached?.apiKey !== next.apiKey) await uiStore.setToStorage('opper_unavailable_providers', []).catch(() => null);
     cached = next;
+}
+
+/** The provider a route runs on, from its id: "deepinfra/ByteDance/Seedream-4" -> "deepinfra", "azure:global/x" -> "azure" */
+export function routeProvider(modelId: string): string {
+    return modelId.split('/')[0].split(':')[0].toLowerCase();
+}
+
+/** "... is not available: provider deepinfra is not configured" -> "deepinfra" */
+export function unconfiguredProvider(message: string): string | null {
+    return /provider\s+([\w.-]+)\s+is not configured/i.exec(message)?.[1]?.toLowerCase() ?? null;
+}
+
+/**
+ * Providers this Opper account cannot use, learned from errors - Opper's listings show every route,
+ * not which providers an account has. Their routes are left out of the model lists.
+ */
+export async function unavailableProviders(): Promise<string[]> {
+    const stored = await uiStore.getFromStorage('opper_unavailable_providers', [] as string[]).catch(() => []);
+    return Array.isArray(stored) ? stored : [];
+}
+
+export async function markProviderUnavailable(provider: string): Promise<void> {
+    const known = await unavailableProviders();
+    if (!known.includes(provider)) await uiStore.setToStorage('opper_unavailable_providers', [...known, provider]);
 }
 
 export async function clearOpperSettings(): Promise<void> {
@@ -330,8 +357,12 @@ export function clearOpperModelCache() {
  * filtered on type, so a model missing from one still shows up. Throws only when neither listing
  * could be read.
  */
-export function listOpperImageModels(apiKey?: string): Promise<OpperModel[]> {
-    return cachedListing(`image:${apiKey?.trim() ?? ''}`, () => fetchOpperImageModels(apiKey));
+export async function listOpperImageModels(apiKey?: string): Promise<OpperModel[]> {
+    const [models, blocked] = await Promise.all([
+        cachedListing(`image:${apiKey?.trim() ?? ''}`, () => fetchOpperImageModels(apiKey)),
+        unavailableProviders(),
+    ]);
+    return blocked.length ? models.filter((model) => !blocked.includes(routeProvider(model.id))) : models;
 }
 
 export function listOpperChatModels(apiKey?: string): Promise<Map<string, OpperModel>> {

@@ -1,6 +1,6 @@
 import { type IGeneratedImageAction } from "@/database/models/WorkspaceChat";
 import { saveGeneratedDocument } from "@/utils/fs/generatedDocuments";
-import { generateOpperImage, getOpperSettings, hasOpperApiKey, imageExtension, listOpperImageModels, traits } from "@/utils/opper";
+import { generateOpperImage, getOpperSettings, hasOpperApiKey, imageExtension, listOpperImageModels, markProviderUnavailable, traits, unconfiguredProvider } from "@/utils/opper";
 import { setPreviousImagePath, sourceImage } from "@/utils/opper/imageSources";
 import { parseToolArgs, type StreamEmitter } from "../createFiles/shared";
 import { type ToolExecutionContext } from "@/utils/ToolsManager";
@@ -93,13 +93,24 @@ export default {
             }
 
             streamEmitter('report_status', i18n.t(reference ? 'tools.generate_image.status_editing' : 'tools.generate_image.status_generating'));
-            const image = await generateOpperImage({
+            const request = {
                 prompt: description,
                 referenceImage: reference?.base64,
                 size: size && (SIZES as readonly string[]).includes(size) ? size : undefined,
-                settings,
-                signal: context?.signal,
-            });
+            };
+            let fallbackNote = '';
+            let image;
+            try {
+                image = await generateOpperImage({ ...request, settings, signal: context?.signal });
+            } catch (error) {
+                // The picked route's provider is not set up on this Opper account: remember that (its
+                // routes leave the list) and make the image with Opper's default model right away
+                const provider = error instanceof Error && settings.model ? unconfiguredProvider(error.message) : null;
+                if (!provider) throw error;
+                await markProviderUnavailable(provider).catch(() => null);
+                image = await generateOpperImage({ ...request, settings: { ...settings, model: '' }, signal: context?.signal });
+                fallbackNote = ` Note: the selected image model (${settings.model}) is not available on the user's Opper account, so Opper's default model was used. Mention this briefly and suggest picking another model in the model chip.`;
+            }
 
             const extension = imageExtension(image.mimeType);
             const saved = await saveGeneratedDocument({
@@ -124,7 +135,7 @@ export default {
             // A follow-up "now make it at night" in the same turn edits this one
             setPreviousImagePath(saved.path);
             streamEmitter('report_status', i18n.t('tools.generate_image.status_generated'));
-            return 'The image was generated and is already shown to the user under your reply. Do not add image links or markdown images; briefly describe what you made or ask if they want changes.';
+            return 'The image was generated and is already shown to the user under your reply. Do not add image links or markdown images; briefly describe what you made or ask if they want changes.' + fallbackNote;
         } catch (e) {
             if (context?.signal?.aborted) return 'Image generation was stopped by the user.';
             // A route that needs the user's own provider account in Opper (eg: an Azure route)

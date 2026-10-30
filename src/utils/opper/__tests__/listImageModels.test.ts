@@ -3,8 +3,16 @@
  * response shapes we accept.
  */
 jest.mock('react-native-keychain', () => ({}));
+const mockStore = new Map<string, any>();
+jest.mock('@/store/UIStore', () => ({
+    __esModule: true,
+    default: {
+        getFromStorage: async (key: string, fallback: any) => (mockStore.has(key) ? mockStore.get(key) : fallback),
+        setToStorage: async (key: string, value: any) => { mockStore.set(key, value); },
+    },
+}));
 
-import { clearOpperModelCache, listOpperImageModels } from '../index';
+import { clearOpperModelCache, listOpperImageModels, markProviderUnavailable, routeProvider, unconfiguredProvider } from '../index';
 
 const fetchMock = jest.fn();
 global.fetch = fetchMock as any;
@@ -26,6 +34,7 @@ function serve(routes: Record<string, (offset: number) => any>) {
 beforeEach(() => {
     fetchMock.mockReset();
     clearOpperModelCache();
+    mockStore.clear();
 });
 
 test('merges both listings, sorted and deduplicated, and sends the key', async () => {
@@ -121,4 +130,19 @@ test('leaves out routes that need the user\'s own provider account', async () =>
     const models = await listOpperImageModels();
 
     expect(models.map((m) => m.id)).toEqual(['openai/gpt-image-1']);
+});
+
+test('routes of a provider the account cannot use are left out', async () => {
+    expect(routeProvider('azure:global/gpt-image-2')).toBe('azure');
+    expect(routeProvider('deepinfra/ByteDance/Seedream-4')).toBe('deepinfra');
+    expect(unconfiguredProvider('model x is not available: provider deepinfra is not configured')).toBe('deepinfra');
+    expect(unconfiguredProvider('rate limited')).toBeNull();
+
+    serve({
+        [IMAGES_URL]: () => json([]),
+        [MODELS_URL]: () => json({ models: [{ id: 'deepinfra/ByteDance/Seedream-4', pooled: true }, { id: 'bytedance:ap/seedream-4', pooled: true }] }),
+    });
+    await markProviderUnavailable('deepinfra');
+
+    expect((await listOpperImageModels()).map((m) => m.id)).toEqual(['bytedance:ap/seedream-4']);
 });
