@@ -150,6 +150,10 @@ const TOOL_LIMIT_NOTE = 'The tool call limit for this reply was reached and no m
 class ToolsManager {
     static instance: ToolsManager;
     private _tools: ToolManagerTool[] | null = null;
+    /** Tools not sent with requests until the model loads them through find_tools (MCP servers) */
+    private _deferred: ToolManagerTool[] = [];
+    /** Tools find_tools loaded during the current tool round, picked up by toolCallLoop */
+    private _activated: ToolManagerTool[] = [];
 
     configurableTools: ToolManagerTool[] = [
         Tools.default.webSearch,
@@ -182,6 +186,7 @@ class ToolsManager {
 
     resetTools() {
         this._tools = null;
+        this._deferred = [];
     }
 
     /**
@@ -209,8 +214,12 @@ class ToolsManager {
         // Tools from the user's MCP servers (Settings > MCP servers). Loaded lazily to avoid an import cycle.
         try {
             // @ts-ignore - dynamic import
-            const { mcpChatTools } = await import('@/utils/mcp/tools');
-            enabledTools.push(...(await mcpChatTools()));
+            const { mcpToolSets, findToolsTool } = await import('@/utils/mcp/tools');
+            const { loaded, deferred, servers } = await mcpToolSets();
+            enabledTools.push(...loaded);
+            this._deferred = deferred;
+            // Deferred tools are reachable through one small tool instead of all their definitions
+            if (deferred.length) enabledTools.push(findToolsTool(deferred, servers, (tools: ToolManagerTool[]) => this.activateTools(tools)));
         } catch (error) {
             this.log('ToolsManager::getTools: Could not load MCP tools', error);
         }
@@ -277,7 +286,8 @@ class ToolsManager {
         toolset: ToolManagerTool[] | null = null,
     ): Promise<any[]> {
         const nextMessages = [...currentMessageHistory];
-        const knownTools = toolset ?? this._tools;
+        // Deferred tools can run too - the model loaded them through find_tools, or knew the name
+        const knownTools = toolset ?? [...(this._tools ?? []), ...this._deferred];
 
         if (!toolCalls || toolCalls.length === 0) return nextMessages;
         streamEmitter('will_call_tools', '');
@@ -322,6 +332,18 @@ class ToolsManager {
             Telemetry.logEvent(Telemetry.CUSTOM_EVENTS.ACTIONS.TOOL_CALLED, { tool: toolCall.function.name });
         }
         return nextMessages;
+    }
+
+    /** Called by find_tools: offer these deferred tools for the rest of the reply */
+    activateTools(tools: ToolManagerTool[]) {
+        this._activated.push(...tools);
+    }
+
+    /** The tools activated since the last call, and clear the list */
+    takeActivatedTools(): ToolManagerTool[] {
+        const activated = this._activated;
+        this._activated = [];
+        return activated;
     }
 
     /**
@@ -469,6 +491,7 @@ class ToolsManager {
         };
 
         let availableTools = toolset ? toolset.map(tool => tool.definition) : await this.injectAvailableTools();
+        this._activated = []; // nothing left over from an earlier, aborted reply
         let nextResponse = currentResponse;
         let nextMessages = [...currentMessageHistory];
         let toolCallsUsed = 0;
@@ -487,6 +510,10 @@ class ToolsManager {
             // the same tool again on every round. The on-device merge flow keeps its text-only history.
             if (!mergeToolCallResults) nextMessages.push(this.assistantToolCallMessage(nextResponse));
             nextMessages = await this.manageToolCallExecutions([toolCall], streamEmitter, nextMessages, maxToolResultChars, { ...executionContext, signal }, toolset ?? null);
+            // Tools loaded by find_tools in this round are offered from the next round on
+            for (const tool of this.takeActivatedTools()) {
+                if (!availableTools.some(available => available.function.name === tool.definition.function.name)) availableTools = [...availableTools, tool.definition];
+            }
             toolCallsUsed += 1;
             throwIfAborted(signal);
             for (const [index, message] of nextMessages.entries()) {

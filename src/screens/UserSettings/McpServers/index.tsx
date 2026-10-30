@@ -273,6 +273,13 @@ function ServerDetail({ server, onChanged, onRemoved }: { server?: McpServer; on
           <Text className="text-white text-base">{t('mcp.use_in_chats')}</Text>
           <ToggleSwitch isOn={server.enabled} onToggle={async () => { await updateServer(server.id, { enabled: !server.enabled }); await onChanged(); }} />
         </View>
+        <View className="flex flex-row items-center justify-between" style={{ gap: 12 }}>
+          <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+            <Text className="text-white text-base">{t('mcp.always_load')}</Text>
+            <Text style={{ color: COLORS.muted, fontSize: 12 }}>{server.alwaysLoad ? t('mcp.always_load_on_hint') : t('mcp.always_load_off_hint')}</Text>
+          </View>
+          <ToggleSwitch isOn={!!server.alwaysLoad} onToggle={async () => { await updateServer(server.id, { alwaysLoad: !server.alwaysLoad }); await onChanged(); }} />
+        </View>
         {server.lastError && server.lastError !== 'auth' && (
           <View className="flex flex-row" style={{ gap: 8 }}>
             <Warning size={16} color={COLORS.danger} />

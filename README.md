@@ -51,6 +51,8 @@ This is a fork of [Mintplex-Labs/anythingllm-mobile](https://github.com/Mintplex
 - Connect remote MCP servers in **Settings > MCP servers** (eg Homey at `https://mcp.athom.com`) and use their tools in any chat, next to the built-in ones.
 - Sign in with OAuth in the browser (discovery, dynamic client registration and PKCE, as the MCP spec describes), or use an API key header. Secrets and tokens stay in the phone's keychain and tokens refresh on their own.
 - Switch servers and single tools on or off. Tools that are not marked read-only ask for your approval before they run.
+- Token-efficient by default: a server's tools are not sent with every message. The chat model gets one small `find_tools` tool listing the tool names, and loads only the tools it needs, when it needs them. Turn on "Always load tools" for a server you use constantly.
+- Image requests are never narrowed away when many tools are on, and image prompts are matched on their text.
 - Remote servers only (Streamable HTTP). Servers that run as a local program (`npx`, `uvx`) need to be hosted first.
 
 **Usage and cost**

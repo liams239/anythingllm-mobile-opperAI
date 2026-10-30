@@ -1604,6 +1604,10 @@
     "error_sign_in": null,
     "error_connect": null,
     "approval_description": null,
-    "status_calling": null
+    "status_calling": null,
+    "find_tools_name": null,
+    "always_load": null,
+    "always_load_off_hint": null,
+    "always_load_on_hint": null
   }
 }

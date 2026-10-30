@@ -171,3 +171,32 @@ describe('toolCallLoop usage totals', () => {
     expect(result.metrics.total_cached_prompt_tokens).toBe(1000 + 1100);
   });
 });
+
+describe('toolCallLoop deferred tools', () => {
+  test('tools loaded by find_tools are offered from the next round', async () => {
+    const lights = makeTool('homey__set_light');
+    const finder = { ...makeTool('find_tools'), execute: jest.fn(async () => { ToolsManager.activateTools([lights]); return 'Loaded 1 tool(s)'; }) };
+    (ToolsManager as any)._tools = [finder];
+    (ToolsManager as any)._deferred = [lights];
+    const offered: string[][] = [];
+    let round = 0;
+    const runStreamCompletion = jest.fn(async (_messages: any[], _cb: any, tools: any[]) => {
+      offered.push(tools.map((t) => t.function.name));
+      round += 1;
+      return round === 1 ? toolCallResponse(['homey__set_light']) : ({ textResponse: 'Light is on', toolCalls: [] } as any);
+    });
+
+    const result = await ToolsManager.toolCallLoop({
+      currentResponse: toolCallResponse(['find_tools']),
+      runStreamCompletion,
+      streamEmitter: () => null,
+      currentMessageHistory: [{ role: 'user', content: 'turn on the light' }],
+      mergeToolCallResults: false,
+    });
+
+    expect(result.textResponse).toBe('Light is on');
+    expect(offered[0]).toEqual(['find_tools', 'homey__set_light']);
+    // The deferred tool ran even though it was never in the initial list
+    expect(lights.execute).toHaveBeenCalledTimes(1);
+  });
+});

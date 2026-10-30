@@ -12,6 +12,7 @@ jest.mock('@/store/UIStore', () => ({
 jest.mock('react-native-keychain', () => ({}));
 jest.mock('@/i18n', () => ({ __esModule: true, default: { t: (key: string) => key } }));
 jest.mock('@/utils/constants', () => ({ generateUUID: () => 'id-1' }));
+const mockActivate = jest.fn();
 jest.mock('@/utils/ToolsManager', () => ({}));
 const mockApproval = jest.fn();
 jest.mock('@/utils/ToolsManager/toolApproval', () => ({ __esModule: true, default: { request: (...args: any[]) => mockApproval(...args) } }));
@@ -21,7 +22,7 @@ jest.mock('../servers', () => ({
     callServerTool: (...args: any[]) => mockCall(...args),
 }));
 
-import { functionNameFor, mcpChatTools, needsApproval, resultToText } from '../tools';
+import { findToolsTool, functionNameFor, mcpChatTools, mcpToolSets, needsApproval, resultToText, searchTools } from '../tools';
 
 const homey = {
     id: 'h1', name: 'Homey', url: 'https://mcp.athom.com', auth: 'oauth', enabled: true, disabledTools: ['delete_flow'],
@@ -82,4 +83,49 @@ test('read-only tools run without asking', async () => {
     mockCall.mockResolvedValueOnce({ content: [{ type: 'text', text: '3 devices' }] });
     expect(await listDevices.execute('{}', jest.fn())).toBe('3 devices');
     expect(mockApproval).not.toHaveBeenCalled();
+});
+
+describe('deferred loading', () => {
+    beforeEach(() => mockActivate.mockReset());
+
+    test('servers load their tools only when set to always load', async () => {
+        mockStorage.set('mcp_servers', [homey, { ...homey, id: 'g1', name: 'GitHub', alwaysLoad: true, disabledTools: [], tools: [{ name: 'create_issue' }] }]);
+        const { loaded, deferred } = await mcpToolSets();
+        expect(loaded.map((t) => t.definition.function.name)).toEqual(['github__create_issue']);
+        expect(deferred.map((t) => t.definition.function.name)).toEqual(['homey__list_devices', 'homey__set_capability']);
+    });
+
+    test('find_tools names every deferred tool and stays the same between requests', async () => {
+        mockStorage.set('mcp_servers', [homey]);
+        const { deferred, servers } = await mcpToolSets();
+        const finder = findToolsTool(deferred, servers, mockActivate);
+        const description = finder.definition.function.description!;
+        expect(description).toContain('Homey: homey__list_devices, homey__set_capability');
+        expect(finder.alwaysOffer).toBe(true);
+        expect(findToolsTool(deferred, servers, mockActivate).definition.function.description).toBe(description);
+    });
+
+    test('loads tools by exact name, or by keywords when no name matches', async () => {
+        mockStorage.set('mcp_servers', [homey]);
+        const { deferred, servers } = await mcpToolSets();
+        const finder = findToolsTool(deferred, servers, mockActivate);
+
+        const byName = await finder.execute({ names: ['homey__set_capability'] }, jest.fn());
+        expect(mockActivate.mock.calls[0][0].map((t: any) => t.definition.function.name)).toEqual(['homey__set_capability']);
+        expect(byName).toMatch(/^Loaded 1 tool/);
+
+        await finder.execute('{"query":"list my devices"}', jest.fn());
+        expect(mockActivate.mock.calls[1][0][0].definition.function.name).toBe('homey__list_devices');
+
+        expect(await finder.execute({ query: 'weather forecast' }, jest.fn())).toMatch(/No tools matched/);
+        expect(mockActivate).toHaveBeenCalledTimes(2);
+    });
+
+    test('keyword search weighs names over descriptions', async () => {
+        mockStorage.set('mcp_servers', [homey]);
+        const { deferred } = await mcpToolSets();
+        expect(searchTools(deferred, 'turn on').map((t) => t.definition.function.name)).toEqual(['homey__set_capability']);
+        expect(searchTools(deferred, 'devices')[0].definition.function.name).toBe('homey__list_devices');
+        expect(searchTools(deferred, '')).toEqual([]);
+    });
 });

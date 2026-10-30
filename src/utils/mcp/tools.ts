@@ -98,20 +98,118 @@ function toManagerTool(server: McpServer, tool: McpTool): ToolManagerTool {
     };
 }
 
-/** Chat tools from every enabled server, using each server's last fetched tool list */
+/** Every chat tool of every enabled server, using each server's last fetched tool list */
 export async function mcpChatTools(): Promise<ToolManagerTool[]> {
+    return (await mcpToolSets()).all;
+}
+
+/**
+ * MCP tools split by how they reach the model: `loaded` (servers set to "always load") go out with
+ * every request; `deferred` only once the model asks for them through the find-tools tool.
+ */
+export async function mcpToolSets(): Promise<{ loaded: ToolManagerTool[]; deferred: ToolManagerTool[]; all: ToolManagerTool[]; servers: McpServer[] }> {
     const servers = await listServers().catch(() => [] as McpServer[]);
-    const tools: ToolManagerTool[] = [];
+    const loaded: ToolManagerTool[] = [];
+    const deferred: ToolManagerTool[] = [];
     const used = new Set<string>();
+    const enabledServers: McpServer[] = [];
     for (const server of servers) {
         if (!server.enabled) continue;
+        enabledServers.push(server);
         for (const tool of server.tools ?? []) {
             if (server.disabledTools?.includes(tool.name)) continue;
             const managed = toManagerTool(server, tool);
             if (used.has(managed.definition.function.name)) continue;
             used.add(managed.definition.function.name);
-            tools.push(managed);
+            (server.alwaysLoad ? loaded : deferred).push(managed);
         }
     }
-    return tools;
+    return { loaded, deferred, all: [...loaded, ...deferred], servers: enabledServers };
+}
+
+export const FIND_TOOLS_NAME = 'find_tools';
+const MAX_FOUND = 5;
+const MAX_NAMES_PER_SERVER = 60;
+
+function words(text: string): string[] {
+    return text.toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/).filter((word) => word.length >= 2);
+}
+
+/**
+ * Plain keyword matching of a search against tool names and descriptions - no model needed, so it
+ * works the same for any chat model and language of the tool descriptions. Name hits weigh most.
+ */
+export function searchTools(tools: ToolManagerTool[], query: string, limit = MAX_FOUND): ToolManagerTool[] {
+    const queryWords = [...new Set(words(query))];
+    if (!queryWords.length) return [];
+    const scored = tools.map((tool) => {
+        const name = tool.definition.function.name.toLowerCase();
+        const description = (tool.definition.function.description ?? '').toLowerCase();
+        let score = 0;
+        for (const word of queryWords) {
+            if (name.includes(word)) score += 3;
+            else if (description.includes(word)) score += 1;
+        }
+        return { tool, score };
+    });
+    return scored.filter((entry) => entry.score > 0).sort((a, b) => b.score - a.score).slice(0, limit).map((entry) => entry.tool);
+}
+
+/**
+ * The one tool that stands in for every deferred MCP tool. Its description names the servers and
+ * their tools (names only), and stays the same between requests so provider prompt caching works.
+ * Calling it hands the matching tools to `activate` (ToolsManager.activateTools), which offers them
+ * for the rest of the reply.
+ */
+export function findToolsTool(deferred: ToolManagerTool[], servers: McpServer[], activate: (tools: ToolManagerTool[]) => void): ToolManagerTool {
+    const catalog = servers
+        .map((server) => {
+            const names = deferred.filter((tool) => tool.config.serverId === server.id).map((tool) => tool.definition.function.name);
+            if (!names.length) return null;
+            const shown = names.slice(0, MAX_NAMES_PER_SERVER);
+            const more = names.length > shown.length ? ` (+${names.length - shown.length} more)` : '';
+            return `${server.name}: ${shown.join(', ')}${more}`;
+        })
+        .filter(Boolean)
+        .join('\n');
+    return {
+        id: 'mcp:find_tools',
+        get name() { return i18n.t('mcp.find_tools_name'); },
+        get description() { return i18n.t('mcp.find_tools_name'); },
+        defaultEnabled: true,
+        category: 'appConnections',
+        supportsOnDevice: true,
+        hiddenFromScheduledJobs: true,
+        alwaysOffer: true,
+        definition: {
+            type: 'function',
+            function: {
+                name: FIND_TOOLS_NAME,
+                description:
+                    'Load more tools from the user\'s connected services before using them. These tools exist but are not loaded yet:\n' +
+                    `${catalog}\n` +
+                    'Call this first whenever one of them could help, with the exact names you need (preferred) or English keywords. ' +
+                    'The loaded tools can be called right after. Do not use it for anything the tools you already have can do.',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        names: { type: 'array', items: { type: 'string' }, description: 'Exact tool names from the list above.' },
+                        query: { type: 'string', description: 'Keywords when you do not know the names, eg "turn on light".' },
+                    },
+                    required: [],
+                },
+            },
+        },
+        config: {},
+        execute: async (args: unknown): Promise<string> => {
+            const parsed = (args && typeof args === 'object' ? args : safeJsonParse(String(args ?? '{}'), {})) as { names?: unknown; query?: unknown };
+            const wanted = Array.isArray(parsed.names) ? parsed.names.map(String) : [];
+            const byName = deferred.filter((tool) => wanted.includes(tool.definition.function.name));
+            const found = byName.length ? byName : searchTools(deferred, String(parsed.query ?? wanted.join(' ')));
+            if (!found.length) return `No tools matched. Pick exact names from the list in this tool's description.`;
+            activate(found);
+            return `Loaded ${found.length} tool(s), now available to call: ` +
+                found.map((tool) => `${tool.definition.function.name}: ${(tool.definition.function.description ?? '').slice(0, 160)}`).join(' | ');
+        },
+    };
 }

@@ -1604,6 +1604,10 @@
     "error_sign_in": "Could not sign in: {{message}}",
     "error_connect": "Could not connect: {{message}}",
     "approval_description": "Run \"{{tool}}\" on {{server}}",
-    "status_calling": "Using {{tool}} on {{server}}"
+    "status_calling": "Using {{tool}} on {{server}}",
+    "find_tools_name": "Find tools of connected services",
+    "always_load": "Always load tools",
+    "always_load_off_hint": "Off (saves tokens): the chat loads only the tools it needs, when it needs them.",
+    "always_load_on_hint": "On: every tool goes with each message. Quicker for a server you use all the time, but costs more tokens."
   }
 }

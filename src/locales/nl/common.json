@@ -1604,6 +1604,10 @@
     "error_sign_in": "Aanmelden mislukt: {{message}}",
     "error_connect": "Verbinden mislukt: {{message}}",
     "approval_description": "\"{{tool}}\" uitvoeren op {{server}}",
-    "status_calling": "{{tool}} gebruiken op {{server}}"
+    "status_calling": "{{tool}} gebruiken op {{server}}",
+    "find_tools_name": "Tools van gekoppelde diensten zoeken",
+    "always_load": "Tools altijd laden",
+    "always_load_off_hint": "Uit (spaart tokens): de chat laadt enkel de tools die nodig zijn, wanneer ze nodig zijn.",
+    "always_load_on_hint": "Aan: alle tools gaan met elk bericht mee. Sneller voor een server die je constant gebruikt, maar kost meer tokens."
   }
 }

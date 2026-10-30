@@ -20,6 +20,11 @@ export type McpServer = {
     /** For `header` auth eg "Authorization" (the value is in the keychain) */
     headerName?: string;
     enabled: boolean;
+    /**
+     * Send every tool of this server with each request. Off (default): the tools are loaded only
+     * when the model asks for them through find_tools, which saves tokens.
+     */
+    alwaysLoad?: boolean;
     /** Tool names switched off by the user */
     disabledTools: string[];
     /** Last tool list fetched, so tools are offered without a network round trip */
