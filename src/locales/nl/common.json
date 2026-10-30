@@ -1531,7 +1531,12 @@
       "any_price": "Alles",
       "show_count_one": "Toon {{count}} model",
       "show_count_other": "Toon {{count}} modellen",
-      "none_match": "Geen modellen voor deze filters"
+      "none_match": "Geen modellen voor deze filters",
+      "hidden_failed_one": "{{count}} model dat faalde op je account is verborgen · Tonen",
+      "hidden_failed_other": "{{count}} modellen die faalden op je account zijn verborgen · Tonen",
+      "availability": "Beschikbaarheid",
+      "show_failed": "Toon modellen die faalden",
+      "show_failed_hint": "Hun provider gaf eerder een fout op je Opper-account. Dat kan tijdelijk geweest zijn."
     },
     "info": {
       "open": "Details van {{name}}",

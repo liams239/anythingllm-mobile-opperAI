@@ -71,7 +71,12 @@ export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFo
 
   useEffect(() => { load(); }, []);
 
-  const filtered = useMemo(() => models.filter((m) => matchesFilters(m.meta, m.price, filters)), [models, filters]);
+  // The picked model always shows, even when a filter would hide it
+  const filtered = useMemo(
+    () => models.filter((m) => m.id === settings.model || matchesFilters(m.meta, m.price, filters, !!m.failure)),
+    [models, filters, settings.model],
+  );
+  const hiddenFailed = filters.showFailed ? 0 : models.filter((m) => m.failure && m.id !== settings.model).length;
   const rows = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     const matches = query
@@ -153,6 +158,11 @@ export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFo
           </View>
           <QuickFilters kind="image" filters={filters} onChange={setFilters} onOpenPanel={() => setView({ name: 'filters' })} />
           {noneTrain && <NoTrainingNote />}
+          {hiddenFailed > 0 && (
+            <TouchableOpacity onPress={() => setFilters({ ...filters, showFailed: true })} className="px-5">
+              <Text style={{ color: '#fcd34d', fontSize: 12 }}>{t('opper_models.filters.hidden_failed', { count: hiddenFailed })}</Text>
+            </TouchableOpacity>
+          )}
           {rows.length === 0 && (
             <Text className="text-white text-sm text-center pt-4 px-5">{t('opper_models.filters.none_match')}</Text>
           )}

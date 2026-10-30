@@ -164,6 +164,11 @@ export function FilterPanel({ kind, filters, onChange, matchCount, onDone }: {
                     <ToggleRow label={t('opper_models.filters.zdr')} hint={t('opper_models.filters.zdr_hint')} on={filters.zdr} onToggle={() => onChange({ ...filters, zdr: !filters.zdr })} />
                     <ToggleRow label={t('opper_models.filters.dpa')} hint={t('opper_models.filters.dpa_hint')} on={filters.dpa} onToggle={() => onChange({ ...filters, dpa: !filters.dpa })} />
                 </Section>
+                {kind === 'image' && (
+                    <Section title={t('opper_models.filters.availability')}>
+                        <ToggleRow label={t('opper_models.filters.show_failed')} hint={t('opper_models.filters.show_failed_hint')} on={filters.showFailed} onToggle={() => onChange({ ...filters, showFailed: !filters.showFailed })} />
+                    </Section>
+                )}
                 <Section title={t('opper_models.filters.can')}>
                     <View className="flex flex-row flex-wrap" style={{ gap: 6 }}>
                         {capabilities.map((capability) => (

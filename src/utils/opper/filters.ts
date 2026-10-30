@@ -20,6 +20,8 @@ export type OpperModelFilters = {
     best: boolean;
     /** Upper bound on `comparablePrice` (per 1M input tokens or per image), null = any */
     maxPrice: number | null;
+    /** Also list routes whose provider failed on the user's account (hidden by default) */
+    showFailed: boolean;
 };
 
 export const EMPTY_FILTERS: OpperModelFilters = {
@@ -31,6 +33,7 @@ export const EMPTY_FILTERS: OpperModelFilters = {
     fast: false,
     best: false,
     maxPrice: null,
+    showFailed: false,
 };
 
 /** Price caps offered per list - per 1M input tokens for chat, per image for images */
@@ -59,7 +62,8 @@ export function activeFilterCount(filters: OpperModelFilters): number {
  * Whether a model passes the filters. A model without metadata (eg: an id the OpenAI-compatible
  * list has but Opper's listing does not) only passes when no filter is on.
  */
-export function matchesFilters(meta: OpperModelMeta | null | undefined, price: OpperPrice | null | undefined, filters: OpperModelFilters): boolean {
+export function matchesFilters(meta: OpperModelMeta | null | undefined, price: OpperPrice | null | undefined, filters: OpperModelFilters, failed = false): boolean {
+    if (failed && !filters.showFailed) return false;
     if (!activeFilterCount(filters)) return true;
     if (!meta) return false;
     if (filters.regions.length && !filters.regions.includes(meta.region ?? '')) return false;
@@ -90,6 +94,7 @@ export function normalizeFilters(stored: unknown): OpperModelFilters {
         fast: raw.fast === true,
         best: raw.best === true,
         maxPrice: typeof raw.maxPrice === 'number' ? raw.maxPrice : null,
+        showFailed: raw.showFailed === true,
     };
 }
 

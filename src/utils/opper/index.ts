@@ -4,7 +4,7 @@ import { parseOpperPrice, type OpperPrice } from './pricing';
 import { parseOpperMeta, type OpperModelMeta } from './metadata';
 
 export { formatOpperPrice, comparablePrice, type OpperPrice } from './pricing';
-export { traits, contextLabel, resolutionLabel, regionLabel, type OpperModelMeta } from './metadata';
+export { traits, contextLabel, resolutionLabel, regionLabel, fitImageSize, type OpperModelMeta } from './metadata';
 export {
     activeFilterCount, matchesFilters, noModelTrains, normalizeFilters, EMPTY_FILTERS, PRICE_STEPS,
     type OpperModelFilters, type OpperModelKind, type OpperCapabilityFilter,
@@ -324,6 +324,7 @@ export function mergeModelEntries(a: OpperModel, b: OpperModel): OpperModel {
             quality: pick(metaA.quality, metaB.quality),
             contextWindow: pick(metaA.contextWindow, metaB.contextWindow),
             maxImageSide: Math.max(metaA.maxImageSide ?? 0, metaB.maxImageSide ?? 0) || undefined,
+            imageSizes: metaA.imageSizes?.length ? metaA.imageSizes : metaB.imageSizes,
             privacy: Object.fromEntries(
                 [...new Set([...Object.keys(metaA.privacy), ...Object.keys(metaB.privacy)])]
                     .map((key) => [key, pick((metaA.privacy as any)[key], (metaB.privacy as any)[key])]),

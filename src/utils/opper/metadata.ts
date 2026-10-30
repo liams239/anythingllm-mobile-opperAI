@@ -21,6 +21,8 @@ export type OpperModelMeta = {
     contextWindow?: number;
     /** Largest image side in pixels the model offers (image models) */
     maxImageSide?: number;
+    /** Sizes the model accepts eg ["1024x1024", "2048x2048"] (image models), when listed */
+    imageSizes?: string[];
     privacy: {
         /** "no" when the provider does not train on your data */
         training?: string;
@@ -65,6 +67,9 @@ export function parseOpperMeta(entry: any): OpperModelMeta {
         quality: str(entry?.quality),
         contextWindow: num(entry?.context_window) || undefined,
         maxImageSide: largestSide(entry?.params?.image?.sizes),
+        imageSizes: Array.isArray(entry?.params?.image?.sizes)
+            ? entry.params.image.sizes.filter((size: unknown): size is string => typeof size === 'string' && /^\d+x\d+$/i.test(size))
+            : undefined,
         privacy: {
             training: str(compliance.training),
             logging: str(compliance.logging),
@@ -119,4 +124,24 @@ export function resolutionLabel(side?: number): string | null {
 export function regionLabel(region?: string): string | null {
     if (!region) return null;
     return region === 'GLOBAL' ? 'Global' : region;
+}
+
+/**
+ * A size the model accepts for the one asked for: the same if listed, else the listed size with the
+ * same orientation and closest shape, else none (the model then uses its default). Unknown lists
+ * keep the request.
+ */
+export function fitImageSize(requested: string | undefined, sizes: string[] | undefined): string | undefined {
+    if (!requested) return undefined;
+    if (!sizes?.length) return requested;
+    if (sizes.includes(requested)) return requested;
+    const parse = (size: string) => size.split('x').map(Number) as [number, number];
+    const [w, h] = parse(requested);
+    const ratio = w / h;
+    const orientation = (r: number) => (Math.abs(r - 1) < 0.05 ? 0 : r > 1 ? 1 : -1);
+    const candidates = sizes
+        .map((size) => ({ size, ratio: parse(size)[0] / parse(size)[1] }))
+        .filter((c) => orientation(c.ratio) === orientation(ratio))
+        .sort((a, b) => Math.abs(a.ratio - ratio) - Math.abs(b.ratio - ratio));
+    return candidates[0]?.size;
 }

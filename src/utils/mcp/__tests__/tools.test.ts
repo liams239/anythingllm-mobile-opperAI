@@ -129,3 +129,23 @@ describe('deferred loading', () => {
         expect(searchTools(deferred, '')).toEqual([]);
     });
 });
+
+test('the whole input schema goes along, so $ref/$defs keep working', async () => {
+    mockStorage.set('mcp_servers', [{ ...homey, disabledTools: [], tools: [{
+        name: 'set_light',
+        inputSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            type: 'object',
+            properties: { light: { $ref: '#/$defs/Light' } },
+            required: ['light'],
+            $defs: { Light: { type: 'object', properties: { id: { type: 'string' } } } },
+            additionalProperties: false,
+        },
+    }] }]);
+    const [tool] = await mcpChatTools();
+    const params: any = tool.definition.function.parameters;
+    expect(params.$defs.Light.type).toBe('object');
+    expect(params.additionalProperties).toBe(false);
+    expect(params.$schema).toBeUndefined();
+    expect(params.required).toEqual(['light']);
+});

@@ -69,7 +69,7 @@ test('generates, saves and reports the image', async () => {
     const emitter = jest.fn();
     const result = await generateImage.execute({ prompt: 'a cat on a bike', size: '1536x1024' }, emitter);
 
-    const [url, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls.find(([u]) => String(u).includes('/functions/'))!;
     expect(url).toBe('https://api.opper.ai/v3/functions/image-gen/call');
     expect(init.headers.Authorization).toBe('Bearer op-key');
     const body = JSON.parse(init.body);

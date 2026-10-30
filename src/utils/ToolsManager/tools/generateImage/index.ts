@@ -1,6 +1,6 @@
 import { type IGeneratedImageAction } from "@/database/models/WorkspaceChat";
 import { saveGeneratedDocument } from "@/utils/fs/generatedDocuments";
-import { generateOpperImage, getOpperSettings, hasOpperApiKey, imageExtension, clearProviderFailure, listOpperImageModels, recordProviderFailure, routeProvider, traits, unconfiguredProvider } from "@/utils/opper";
+import { generateOpperImage, getOpperSettings, hasOpperApiKey, imageExtension, clearProviderFailure, fitImageSize, listOpperImageModels, recordProviderFailure, routeProvider, traits, unconfiguredProvider } from "@/utils/opper";
 import { setPreviousImagePath, sourceImage } from "@/utils/opper/imageSources";
 import { parseToolArgs, type StreamEmitter } from "../createFiles/shared";
 import { type ToolExecutionContext } from "@/utils/ToolsManager";
@@ -93,10 +93,15 @@ export default {
             }
 
             streamEmitter('report_status', i18n.t(reference ? 'tools.generate_image.status_editing' : 'tools.generate_image.status_generating'));
+            // Not every model takes every size (eg: Seedream starts at 2048x2048) - ask for one it lists
+            const requestedSize = size && (SIZES as readonly string[]).includes(size) ? size : undefined;
+            const pickedModel = settings.model && requestedSize
+                ? (await listOpperImageModels(settings.apiKey).catch(() => [])).find((m) => m.id === settings.model)
+                : undefined;
             const request = {
                 prompt: description,
                 referenceImage: reference?.base64,
-                size: size && (SIZES as readonly string[]).includes(size) ? size : undefined,
+                size: fitImageSize(requestedSize, pickedModel?.meta?.imageSizes),
             };
             let fallbackNote = '';
             let image;

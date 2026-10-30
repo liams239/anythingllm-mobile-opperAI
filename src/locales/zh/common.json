@@ -1481,7 +1481,11 @@
       "per_million": null,
       "any_price": null,
       "show_count_other": null,
-      "none_match": null
+      "none_match": null,
+      "hidden_failed_other": null,
+      "availability": null,
+      "show_failed": null,
+      "show_failed_hint": null
     },
     "info": {
       "open": null,

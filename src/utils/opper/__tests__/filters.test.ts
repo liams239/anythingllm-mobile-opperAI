@@ -1,7 +1,7 @@
 /**
  * Model metadata and filters against real Opper listing entries.
  */
-import { contextLabel, parseOpperMeta, regionLabel, resolutionLabel, traits } from '../metadata';
+import { contextLabel, fitImageSize, parseOpperMeta, regionLabel, resolutionLabel, traits } from '../metadata';
 import { activeFilterCount, EMPTY_FILTERS, matchesFilters, noModelTrains, normalizeFilters } from '../filters';
 import { parseOpperPrice } from '../pricing';
 
@@ -66,4 +66,24 @@ test('counts active filters and repairs stored ones', () => {
     expect(normalizeFilters({ regions: ['EU', 3], capabilities: ['vision', 'bogus'], fast: 'yes', maxPrice: '2' }))
         .toEqual({ ...EMPTY_FILTERS, regions: ['EU'], capabilities: ['vision'] });
     expect(normalizeFilters(undefined)).toEqual(EMPTY_FILTERS);
+});
+
+test('failed routes are hidden unless asked for, and do not count as a filter', () => {
+    const meta = parseOpperMeta(image('pruna/p-image'));
+    expect(matchesFilters(meta, null, EMPTY_FILTERS, true)).toBe(false);
+    expect(matchesFilters(meta, null, { ...EMPTY_FILTERS, showFailed: true }, true)).toBe(true);
+    expect(activeFilterCount({ ...EMPTY_FILTERS, showFailed: true })).toBe(0);
+});
+
+test('asks a model only for a size it lists', () => {
+    const seedream = parseOpperMeta(image('bytedance:ap/seedream-4.5')).imageSizes;
+    expect(seedream).toContain('2048x2048');
+    expect(fitImageSize('1024x1024', seedream)).toBe('2048x2048');
+    expect(fitImageSize('1536x1024', seedream)).toMatch(/^(\d+)x(\d+)$/);
+    const [w, h] = fitImageSize('1536x1024', seedream)!.split('x').map(Number);
+    expect(w).toBeGreaterThan(h);
+    expect(fitImageSize('1536x1024', ['1024x1024', '1536x1024'])).toBe('1536x1024');
+    expect(fitImageSize('1024x1536', ['1024x1024'])).toBeUndefined();
+    expect(fitImageSize('1024x1024', undefined)).toBe('1024x1024');
+    expect(fitImageSize(undefined, ['1024x1024'])).toBeUndefined();
 });

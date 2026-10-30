@@ -49,7 +49,11 @@ export function needsApproval(tool: McpTool): boolean {
 function toManagerTool(server: McpServer, tool: McpTool): ToolManagerTool {
     const functionName = functionNameFor(server.name, tool.name);
     const label = tool.title || tool.annotations?.title || tool.name;
-    const schema = tool.inputSchema && typeof tool.inputSchema === 'object' ? tool.inputSchema : {};
+    const schema: Record<string, any> = tool.inputSchema && typeof tool.inputSchema === 'object' ? tool.inputSchema : {};
+    // The whole schema goes along: keeping only properties/required would drop eg "$defs", which
+    // "$ref"s in the properties point to, and the provider then rejects the request
+    const schemaRest = { ...schema };
+    delete schemaRest.$schema;
     return {
         id: `mcp:${server.id}:${tool.name}`,
         name: `${server.name}: ${label}`,
@@ -65,10 +69,11 @@ function toManagerTool(server: McpServer, tool: McpTool): ToolManagerTool {
                 name: functionName,
                 description: `[${server.name}] ${tool.description ?? label}`.slice(0, 1024),
                 parameters: {
+                    ...schemaRest,
                     type: 'object',
                     properties: schema.properties ?? {},
                     required: Array.isArray(schema.required) ? schema.required : [],
-                },
+                } as ToolManagerTool['definition']['function']['parameters'],
             },
         },
         config: { serverId: server.id, toolName: tool.name },

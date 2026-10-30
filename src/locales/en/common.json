@@ -1531,7 +1531,12 @@
       "any_price": "Any",
       "show_count_one": "Show {{count}} model",
       "show_count_other": "Show {{count}} models",
-      "none_match": "No models match these filters"
+      "none_match": "No models match these filters",
+      "hidden_failed_one": "{{count}} model that failed on your account is hidden · Show",
+      "hidden_failed_other": "{{count}} models that failed on your account are hidden · Show",
+      "availability": "Availability",
+      "show_failed": "Show models that failed",
+      "show_failed_hint": "Their provider gave an error on your Opper account before. It may have been temporary."
     },
     "info": {
       "open": "Details for {{name}}",
