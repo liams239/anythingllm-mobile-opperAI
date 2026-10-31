@@ -1,7 +1,7 @@
 import { type IGeneratedImageAction } from "@/database/models/WorkspaceChat";
 import { saveGeneratedDocument } from "@/utils/fs/generatedDocuments";
 import { generateOpperImage, getOpperSettings, hasOpperApiKey, imageExtension, clearProviderFailure, fitImageSize, listOpperImageModels, recordProviderFailure, routeProvider, traits, unconfiguredProvider } from "@/utils/opper";
-import { setPreviousImagePath, sourceImage } from "@/utils/opper/imageSources";
+import { countImageAttempt, setPreviousImagePath, sourceImage } from "@/utils/opper/imageSources";
 import { parseToolArgs, type StreamEmitter } from "../createFiles/shared";
 import { type ToolExecutionContext } from "@/utils/ToolsManager";
 import i18n from "@/i18n";
@@ -9,6 +9,7 @@ import i18n from "@/i18n";
 type Args = { prompt: string; size?: string; source?: 'none' | 'attached' | 'previous'; attached_index?: number };
 
 const SIZES = ['1024x1024', '1536x1024', '1024x1536'] as const;
+const MAX_ATTEMPTS_PER_REPLY = 2;
 
 /**
  * Hands image requests to an image model on Opper so the user can mix normal chat and image
@@ -71,6 +72,11 @@ export default {
             const { prompt, size, source = 'none', attached_index: attachedIndex = 0 } = parseToolArgs<Args>(args, { prompt: '' });
             const description = String(prompt ?? '').trim();
             if (!description) return 'No image description provided. No image was generated.';
+
+            // Every call costs money: after two in one reply, stop and let the user decide
+            if (countImageAttempt() > MAX_ATTEMPTS_PER_REPLY) {
+                return 'Image generation was already tried twice in this reply. Do not call generate_image again now: tell the user what went wrong and let them decide (eg: try again later or pick another image model).';
+            }
 
             const settings = await getOpperSettings();
             if (!settings?.apiKey) return 'Image generation is not set up: the user has to add an Opper API key in Settings > Image generation. Tell them so.';
@@ -151,7 +157,7 @@ export default {
                 return `The selected image model cannot be used with this Opper account (${e.message}). Tell the user to pick another image model in the model chip, eg one marked "Edit" for editing photos, and do not retry with the same model.`;
             }
             console.error(`Generate Image Error: ${e instanceof Error ? e.message : 'Unknown error'}`);
-            return `There was an error generating the image: ${e instanceof Error ? e.message : 'Unknown error'}`;
+            return `There was an error generating the image: ${e instanceof Error ? e.message : 'Unknown error'}. Retry at most once, and only if the error looks temporary; otherwise tell the user.`;
         }
     },
 } as const;

@@ -289,7 +289,8 @@
     "generated_image": {
       "missing": null,
       "open_label": null,
-      "share": null
+      "share": null,
+      "unreadable": null
     },
     "file_download": {
       "saved_to": "Zapisano {{filename}} do {{location}}",

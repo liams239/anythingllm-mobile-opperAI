@@ -45,6 +45,8 @@ function GeneratedImageCard({ action }: { action: IGeneratedImageAction }) {
     const [status, setStatus] = useState<'checking' | 'ready' | 'missing'>('checking');
     const [busy, setBusy] = useState(false);
     const [lightboxOpen, setLightboxOpen] = useState(false);
+    // The file is there but is not a readable image (eg: saved by an older version from a bad answer)
+    const [unreadable, setUnreadable] = useState(false);
     const lightboxImages = useMemo(() => path ? [{ name: filename, mime: mimeType, contentString: `file://${path}` }] : [], [path, filename, mimeType]);
 
     useEffect(() => {
@@ -79,11 +81,11 @@ function GeneratedImageCard({ action }: { action: IGeneratedImageAction }) {
     });
     const handleShare = () => withFile(async (sourcePath) => { await shareDeviceFile({ path: sourcePath, filename, mimeType }); });
 
-    if (status === 'missing' || !path) {
+    if (status === 'missing' || !path || unreadable) {
         return (
             <View style={{ backgroundColor: COLORS.card, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, gap: 10, opacity: 0.65 }} className="flex flex-row items-center">
                 <ImageBroken size={20} color={COLORS.muted} />
-                <Text style={{ color: COLORS.muted, fontSize: 13, flex: 1 }} numberOfLines={2}>{t('chat.generated_image.missing')}</Text>
+                <Text style={{ color: COLORS.muted, fontSize: 13, flex: 1 }} numberOfLines={2}>{unreadable ? t('chat.generated_image.unreadable') : t('chat.generated_image.missing')}</Text>
             </View>
         );
     }
@@ -99,7 +101,7 @@ function GeneratedImageCard({ action }: { action: IGeneratedImageAction }) {
                 className="flex items-center justify-center">
                 {status === 'checking'
                     ? <ActivityIndicator color={COLORS.muted} />
-                    : <Image source={{ uri: `file://${path}` }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />}
+                    : <Image source={{ uri: `file://${path}` }} style={{ width: '100%', height: '100%' }} resizeMode="cover" onError={() => setUnreadable(true)} />}
             </TouchableOpacity>
             <View style={{ gap: 6 }} className="flex flex-row items-center">
                 <IconButton onPress={handleSave} disabled={busy || status !== 'ready'} label={t('common.download')} icon={<DownloadSimple size={16} color={COLORS.text} weight="bold" />} />

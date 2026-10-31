@@ -48,6 +48,7 @@ function okResponse(body: any) {
 }
 
 beforeEach(async () => {
+    require('@/utils/opper/imageSources').setTurnImages({ attachments: [], previousImagePath: null });
     fetchMock.mockReset();
     mockFiles.clear();
     await clearOpperSettings();
@@ -64,7 +65,7 @@ test('asks for an API key when none is saved', async () => {
 test('generates, saves and reports the image', async () => {
     await saveOpperSettings({ apiKey: ' op-key ', model: 'openai/gpt-image-1' });
     expect(await generateImage.requestPermission()).toBe(true);
-    fetchMock.mockResolvedValue(okResponse({ data: { image: 'aGVsbG8=', mime_type: 'image/jpeg' }, meta: { cost: 0.042, models_used: ['openai/gpt-image-1'] } }));
+    fetchMock.mockResolvedValue(okResponse({ data: { image: '/9j/4AAQSkZJRg==', mime_type: 'image/jpeg' }, meta: { cost: 0.042, models_used: ['openai/gpt-image-1'] } }));
 
     const emitter = jest.fn();
     const result = await generateImage.execute({ prompt: 'a cat on a bike', size: '1536x1024' }, emitter);
@@ -79,7 +80,7 @@ test('generates, saves and reports the image', async () => {
 
     const [[savedPath, saved]] = [...mockFiles.entries()];
     expect(savedPath).toMatch(/^\/docs\/generated-documents\/image-[a-f0-9-]{36}\.jpg$/);
-    expect(saved).toEqual({ content: 'aGVsbG8=', encoding: 'base64' });
+    expect(saved).toEqual({ content: '/9j/4AAQSkZJRg==', encoding: 'base64' });
 
     const action = emitter.mock.calls.find(([event]) => event === 'report_action')?.[1];
     expect(action).toMatchObject({
@@ -91,7 +92,7 @@ test('generates, saves and reports the image', async () => {
 
 test('omits model and unknown sizes so Opper picks its defaults', async () => {
     await saveOpperSettings({ apiKey: 'op-key', model: '' });
-    fetchMock.mockResolvedValue(okResponse({ data: { image: 'data:image/png;base64,aGk=' } }));
+    fetchMock.mockResolvedValue(okResponse({ data: { image: 'data:image/png;base64,iVBORw0KGgoAAAAN' } }));
 
     await generateImage.execute({ prompt: 'a tree', size: '9x9' }, jest.fn());
 
@@ -100,7 +101,7 @@ test('omits model and unknown sizes so Opper picks its defaults', async () => {
     expect(body.input).toEqual({ description: 'a tree' });
     const [[savedPath, saved]] = [...mockFiles.entries()];
     expect(savedPath).toMatch(/\.png$/);
-    expect(saved.content).toBe('aGk=');
+    expect(saved.content).toBe('iVBORw0KGgoAAAAN');
 });
 
 test('returns the Opper error to the model instead of throwing', async () => {
@@ -110,7 +111,7 @@ test('returns the Opper error to the model instead of throwing', async () => {
     const emitter = jest.fn();
     const result = await generateImage.execute({ prompt: 'a cat' }, emitter);
 
-    expect(result).toBe('There was an error generating the image: Opper error 401: Invalid API key');
+    expect(result).toMatch(/^There was an error generating the image: Opper error 401: Invalid API key\./);
     expect(emitter).not.toHaveBeenCalledWith('report_action', expect.anything());
 });
 
@@ -121,7 +122,7 @@ describe('editing an image', () => {
     test('sends the attached photo as the reference image', async () => {
         await saveOpperSettings({ apiKey: 'op-key', model: '' });
         setTurnImages({ attachments: [{ contentString: 'data:image/jpeg;base64,Zmlyc3Q=' }, { contentString: 'data:image/jpeg;base64,c2Vjb25k' }], previousImagePath: null });
-        fetchMock.mockResolvedValue(okResponse({ data: { image: 'aGk=', mime_type: 'image/png' } }));
+        fetchMock.mockResolvedValue(okResponse({ data: { image: 'iVBORw0KGgoAAAAN', mime_type: 'image/png' } }));
 
         const emitter = jest.fn();
         await generateImage.execute({ prompt: 'make the lawn flat', source: 'attached', attached_index: 1 }, emitter);
@@ -145,7 +146,7 @@ describe('editing an image', () => {
         setTurnImages({ attachments: [{ contentString: 'data:image/jpeg;base64,eA==' }], previousImagePath: null });
         fetchMock.mockImplementation(async (url: string) => (url.includes('/models')
             ? listing([{ id: 'pruna/p-image', name: 'Pruna P-Image', capabilities: ['image_generation'] }])
-            : okResponse({ data: { image: 'aGk=' } })));
+            : okResponse({ data: { image: 'iVBORw0KGgoAAAAN' } })));
 
         const result = await generateImage.execute({ prompt: 'flatter', source: 'attached' }, jest.fn());
 
@@ -179,7 +180,7 @@ test('a route whose provider is not set up falls back to the default model and i
         calls += 1;
         const body = JSON.parse(init.body);
         if (body.model) return { ok: false, status: 400, text: async () => JSON.stringify({ error: { message: 'model deepinfra/ByteDance/Seedream-4 is not available: provider deepinfra is not configured' } }) };
-        return okResponse({ data: { image: 'aGk=', mime_type: 'image/png' } });
+        return okResponse({ data: { image: 'iVBORw0KGgoAAAAN', mime_type: 'image/png' } });
     });
 
     const result = await generateImage.execute({ prompt: 'a garden' }, jest.fn());
@@ -196,9 +197,59 @@ test('a success with the picked route clears an earlier failure of its provider'
     const { recordProviderFailure, providerFailures } = require('@/utils/opper');
     await saveOpperSettings({ apiKey: 'op-key', model: 'deepinfra/ByteDance/Seedream-4' });
     await recordProviderFailure('deepinfra', 'provider deepinfra is not configured');
-    fetchMock.mockResolvedValue(okResponse({ data: { image: 'aGk=', mime_type: 'image/png' } }));
+    fetchMock.mockResolvedValue(okResponse({ data: { image: 'iVBORw0KGgoAAAAN', mime_type: 'image/png' } }));
 
     await generateImage.execute({ prompt: 'a garden' }, jest.fn());
 
     expect((await providerFailures()).deepinfra).toBeUndefined();
+});
+
+describe('reading Opper\'s answer', () => {
+    const { imageFromResponse, sniffImageType } = require('@/utils/opper');
+    const settings = { apiKey: 'k', model: '' };
+    const bytesOf = (b64: string) => new Uint8Array(Buffer.from(b64, 'base64'));
+    const download = (b64: string, type = 'image/png') => ({ ok: true, status: 200, headers: { get: () => type }, arrayBuffer: async () => Buffer.from(b64, 'base64') });
+
+    test('recognises real image bytes only', () => {
+        expect(sniffImageType(bytesOf('iVBORw0KGgoAAAAN'))).toBe('image/png');
+        expect(sniffImageType(bytesOf('/9j/4AAQSkZJRg=='))).toBe('image/jpeg');
+        expect(sniffImageType(bytesOf('aGVsbG8='))).toBeNull();
+    });
+
+    test('rejects data that is not an image instead of saving a blank card', async () => {
+        await expect(imageFromResponse({ data: { image: 'aGVsbG8=' } }, settings)).rejects.toThrow('not an image');
+    });
+
+    test('downloads an image given as a URL', async () => {
+        fetchMock.mockResolvedValueOnce(download('/9j/4AAQSkZJRg==', 'image/jpeg'));
+        expect(await imageFromResponse({ data: { image: 'https://cdn.opper.ai/x.jpg' } }, settings)).toEqual({ base64: '/9j/4AAQSkZJRg==', mimeType: 'image/jpeg' });
+    });
+
+    test('waits for a queued image and downloads it when ready', async () => {
+        jest.useFakeTimers();
+        fetchMock
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'processing' }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: 'completed', url: 'https://cdn.opper.ai/done.png' }) })
+            .mockResolvedValueOnce(download('iVBORw0KGgoAAAAN'));
+        const pending = imageFromResponse({ data: {}, meta: { status: 'pending', pending_operations: [{ id: 'op-1' }] } }, settings);
+        await jest.advanceTimersByTimeAsync(3_000);
+        await jest.advanceTimersByTimeAsync(3_000);
+        await expect(pending).resolves.toEqual({ base64: 'iVBORw0KGgoAAAAN', mimeType: 'image/png' });
+        expect(fetchMock.mock.calls[0][0]).toBe('https://api.opper.ai/v3/artifacts/op-1/status');
+        jest.useRealTimers();
+    });
+
+    test('says which fields came back when there is no image', async () => {
+        await expect(imageFromResponse({ data: { result: 'x' }, meta: { status: 'done' } }, settings)).rejects.toThrow('data fields: result, status: done');
+    });
+});
+
+test('stops after two image attempts in one reply', async () => {
+    await saveOpperSettings({ apiKey: 'op-key', model: '' });
+    fetchMock.mockResolvedValue({ ok: false, status: 500, text: async () => 'boom' });
+    await generateImage.execute({ prompt: 'a' }, jest.fn());
+    await generateImage.execute({ prompt: 'a' }, jest.fn());
+    const third = await generateImage.execute({ prompt: 'a' }, jest.fn());
+    expect(third).toMatch(/already tried twice/);
+    expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('/functions/'))).toHaveLength(2);
 });

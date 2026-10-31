@@ -283,7 +283,8 @@
     "generated_image": {
       "missing": "Afbeelding staat niet meer op dit toestel",
       "open_label": "Gegenereerde afbeelding openen: {{prompt}}",
-      "share": "Delen"
+      "share": "Delen",
+      "unreadable": "Deze afbeelding kon niet gelezen worden. Vraag ze opnieuw."
     },
     "file_download": {
       "saved_to": "{{filename}} opgeslagen naar {{location}}",

@@ -283,7 +283,8 @@
     "generated_image": {
       "missing": "Image no longer on this device",
       "open_label": "Open generated image: {{prompt}}",
-      "share": "Share"
+      "share": "Share",
+      "unreadable": "This image could not be read. Ask for it again."
     },
     "file_download": {
       "saved_to": "Saved {{filename}} to {{location}}",

@@ -280,7 +280,8 @@
     "generated_image": {
       "missing": null,
       "open_label": null,
-      "share": null
+      "share": null,
+      "unreadable": null
     },
     "file_download": {
       "saved_to": "已保存 {{filename}} 到 {{location}}",

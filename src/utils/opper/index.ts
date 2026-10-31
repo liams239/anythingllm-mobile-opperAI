@@ -1,4 +1,5 @@
 import * as Keychain from 'react-native-keychain';
+import { Buffer } from 'buffer';
 import uiStore from '@/store/UIStore';
 import { parseOpperPrice, type OpperPrice } from './pricing';
 import { parseOpperMeta, type OpperModelMeta } from './metadata';
@@ -186,15 +187,81 @@ export async function generateOpperImage({ prompt, size, referenceImage, setting
     if (!response.ok) throw new Error(errorMessage(response.status, text));
 
     const parsed = JSON.parse(text);
-    const raw: string | undefined = parsed?.data?.image;
-    if (!raw) throw new Error('Opper returned no image');
-    // Be lenient if a data: URL comes back instead of bare base64
-    const match = /^data:([^;]+);base64,(.*)$/s.exec(raw);
-    const base64 = match ? match[2] : raw;
-    const mimeType = match?.[1] || parsed?.data?.mime_type || 'image/png';
     const cost = typeof parsed?.meta?.cost === 'number' && Number.isFinite(parsed.meta.cost) ? parsed.meta.cost : undefined;
     const usedModel = Array.isArray(parsed?.meta?.models_used) && typeof parsed.meta.models_used[0] === 'string' ? parsed.meta.models_used[0] : undefined;
-    return { base64, mimeType, cost, model: usedModel ?? (settings.model || undefined) };
+
+    const image = await imageFromResponse(parsed, settings, signal);
+    return { ...image, cost, model: usedModel ?? (settings.model || undefined) };
+}
+
+const ARTIFACT_POLL_MS = 3_000;
+const ARTIFACT_TIMEOUT_MS = 5 * 60_000;
+
+/** What kind of image the bytes are, from their first bytes - null when they are not an image */
+export function sniffImageType(bytes: Uint8Array): string | null {
+    const startsWith = (...sig: number[]) => sig.every((byte, i) => bytes[i] === byte);
+    if (startsWith(0x89, 0x50, 0x4e, 0x47)) return 'image/png';
+    if (startsWith(0xff, 0xd8, 0xff)) return 'image/jpeg';
+    if (startsWith(0x47, 0x49, 0x46, 0x38)) return 'image/gif';
+    if (startsWith(0x52, 0x49, 0x46, 0x46) && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) return 'image/webp';
+    return null;
+}
+
+/** Base64 that really holds an image, with its actual type - or a clear error instead of a blank card */
+function checkedImage(base64: string, claimedMime?: string): { base64: string; mimeType: string } {
+    const clean = base64.replace(/\s+/g, '');
+    const type = sniffImageType(new Uint8Array(Buffer.from(clean.slice(0, 64), 'base64')));
+    if (!type) throw new Error(`Opper returned data that is not an image${claimedMime ? ` (said ${claimedMime})` : ''}`);
+    return { base64: clean, mimeType: type };
+}
+
+async function download(url: string, signal?: AbortSignal | null): Promise<{ base64: string; mimeType: string }> {
+    const response = await fetch(url, { signal: signal ?? undefined });
+    if (!response.ok) throw new Error(`Could not download the image from Opper (${response.status})`);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    return checkedImage(bytes.toString('base64'), response.headers.get('content-type') ?? undefined);
+}
+
+function sleep(ms: number, signal?: AbortSignal | null): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, ms);
+        signal?.addEventListener('abort', () => { clearTimeout(timer); reject(new Error('aborted')); }, { once: true });
+    });
+}
+
+/**
+ * The image in an Opper function answer. It comes as base64 or a data: URI in `data.image`, a URL,
+ * or - for slow models - not yet: `meta.status` "pending" with an operation to poll at
+ * /v3/artifacts/{id}/status until it has a download URL (how the Opper SDK waits for media).
+ */
+export async function imageFromResponse(parsed: any, settings: OpperSettings, signal?: AbortSignal | null): Promise<{ base64: string; mimeType: string }> {
+    const data = parsed?.data ?? {};
+    const candidate: unknown = data.image ?? data.images?.[0]?.image ?? data.images?.[0] ?? data.url ?? data.image_url;
+    if (typeof candidate === 'string' && candidate) {
+        if (/^https?:\/\//i.test(candidate)) return download(candidate, signal);
+        const match = /^data:([^;]+);base64,(.*)$/s.exec(candidate);
+        return checkedImage(match ? match[2] : candidate, match?.[1] ?? data.mime_type);
+    }
+
+    const pending = parsed?.meta?.status === 'pending' ? parsed?.meta?.pending_operations?.[0] : null;
+    if (pending?.id) {
+        const started = Date.now();
+        while (Date.now() - started < ARTIFACT_TIMEOUT_MS) {
+            await sleep(ARTIFACT_POLL_MS, signal);
+            const response = await fetch(`${OPPER_BASE_URL}/v3/artifacts/${encodeURIComponent(pending.id)}/status`, {
+                headers: { Authorization: `Bearer ${settings.apiKey}` },
+                signal: signal ?? undefined,
+            });
+            const status: any = await response.json().catch(() => null);
+            if (status?.status === 'completed' && status.url) return download(status.url, signal);
+            if (status?.status === 'failed') throw new Error(`Opper could not make the image: ${status.error || 'generation failed'}`);
+        }
+        throw new Error('Opper took more than 5 minutes to make the image');
+    }
+
+    // Say what did come back, so the problem can be traced
+    const fields = Object.keys(data).join(', ') || 'none';
+    throw new Error(`Opper returned no image (data fields: ${fields}${parsed?.meta?.status ? `, status: ${parsed.meta.status}` : ''})`);
 }
 
 /** File extension for an image MIME type */

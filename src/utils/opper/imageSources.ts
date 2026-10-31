@@ -14,9 +14,18 @@ type TurnImages = {
 };
 
 let current: TurnImages = { attachments: [], previousImagePath: null };
+/** Image tool calls in the current turn - each one costs money, so retries are capped */
+let attemptsThisTurn = 0;
 
 export function setTurnImages(images: TurnImages) {
     current = { attachments: images.attachments.filter((a) => typeof a?.contentString === 'string'), previousImagePath: images.previousImagePath };
+    attemptsThisTurn = 0;
+}
+
+/** Count one image tool call in this turn and return how many there were, this one included */
+export function countImageAttempt(): number {
+    attemptsThisTurn += 1;
+    return attemptsThisTurn;
 }
 
 export function setPreviousImagePath(path: string) {
